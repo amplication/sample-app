@@ -3,7 +3,7 @@ import { CustomerOrderByInput } from "./CustomerOrderByInput";
 
 export type CustomerFindManyArgs = {
   where?: CustomerWhereInput;
-  orderBy?: CustomerOrderByInput;
+  orderBy?: Array<CustomerOrderByInput>;
   skip?: number;
   take?: number;
 };

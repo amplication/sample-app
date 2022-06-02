@@ -35,7 +35,7 @@ async function seed(bcryptSalt: Salt) {
     update: {},
     create: data,
   });
-  client.$disconnect();
+  void client.$disconnect();
 
   console.info("Seeding database with custom seed...");
   customSeed();

@@ -3,7 +3,7 @@ import { ProductOrderByInput } from "./ProductOrderByInput";
 
 export type ProductFindManyArgs = {
   where?: ProductWhereInput;
-  orderBy?: ProductOrderByInput;
+  orderBy?: Array<ProductOrderByInput>;
   skip?: number;
   take?: number;
 };
