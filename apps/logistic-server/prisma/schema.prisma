@@ -1,0 +1,36 @@
+datasource mysql {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Warehouse {
+  address   String?
+  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
+  name      String?
+  shipments Shipment[]
+  updatedAt DateTime   @updatedAt
+}
+
+model Shipment {
+  createdAt DateTime    @default(now())
+  id        String      @id @default(cuid())
+  location  String?
+  updatedAt DateTime    @updatedAt
+  warehouse Warehouse[]
+}
