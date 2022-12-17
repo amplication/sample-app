@@ -15,7 +15,7 @@ This service use the `send` pattern of the broker to notify when an order or a p
 - `order.update.v1`
 - `product.create.v1`
 - `product.update.v1`
-### ecommerce-admin
+## ecommerce-admin
 The admin UI dashboard for the e-commerce application
 ## logistic-server
 Services that holds the warhorse and the shipment entities.
