@@ -1,6 +1,4 @@
-This project was generated with [Amplication](https://amplication.com)
-
-This repository consists of three apps:
+This project was generated with [Amplication](https://amplication.com) and consists of three apps:
 
 ## ecommerce-server
 Order management service for e-commerce applications.
