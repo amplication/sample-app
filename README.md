@@ -1,9 +1,9 @@
 This sample project manages an ecommerce and logistics process. 
 
 The project was generated with [Amplication](https://amplication.com) and consists of three services:
-- ecommerce-server
-- ecommerce-admin
-- logistic-server
+- [ecommerce-server](#ecommerce-server)
+- [ecommerce-admin](#ecommerce-admin)
+- [logistic-server](#logistic-server)
 
 
 ## ecommerce-server
