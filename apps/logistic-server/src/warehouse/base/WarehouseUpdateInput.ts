@@ -14,6 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, ValidateNested } from "class-validator";
 import { ShipmentUpdateManyWithoutWarehousesInput } from "./ShipmentUpdateManyWithoutWarehousesInput";
 import { Type } from "class-transformer";
+
 @InputType()
 class WarehouseUpdateInput {
   @ApiProperty({
@@ -50,4 +51,5 @@ class WarehouseUpdateInput {
   })
   shipments?: ShipmentUpdateManyWithoutWarehousesInput;
 }
+
 export { WarehouseUpdateInput };

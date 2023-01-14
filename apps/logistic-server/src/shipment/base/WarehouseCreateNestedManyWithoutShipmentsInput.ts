@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from "@nestjs/graphql";
 import { WarehouseWhereUniqueInput } from "../../warehouse/base/WarehouseWhereUniqueInput";
 import { ApiProperty } from "@nestjs/swagger";
+
 @InputType()
 class WarehouseCreateNestedManyWithoutShipmentsInput {
   @Field(() => [WarehouseWhereUniqueInput], {
@@ -23,4 +24,5 @@ class WarehouseCreateNestedManyWithoutShipmentsInput {
   })
   connect?: Array<WarehouseWhereUniqueInput>;
 }
+
 export { WarehouseCreateNestedManyWithoutShipmentsInput };

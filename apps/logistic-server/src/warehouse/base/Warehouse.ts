@@ -14,6 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, IsDate, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { Shipment } from "../../shipment/base/Shipment";
+
 @ObjectType()
 class Warehouse {
   @ApiProperty({
@@ -71,4 +72,5 @@ class Warehouse {
   @Field(() => Date)
   updatedAt!: Date;
 }
+
 export { Warehouse };

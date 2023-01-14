@@ -14,6 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsString, IsOptional, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { Warehouse } from "../../warehouse/base/Warehouse";
+
 @ObjectType()
 class Shipment {
   @ApiProperty({
@@ -60,4 +61,5 @@ class Shipment {
   @IsOptional()
   warehouse?: Array<Warehouse>;
 }
+
 export { Shipment };
