@@ -20,6 +20,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Order } from "../../order/base/Order";
+
 @ObjectType()
 class Product {
   @ApiProperty({
@@ -88,4 +89,5 @@ class Product {
   @Field(() => Date)
   updatedAt!: Date;
 }
+
 export { Product };

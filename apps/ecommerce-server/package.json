@@ -1,5 +1,5 @@
 {
-  "name": "@sample-service/server",
+  "name": "@ecommerce/server",
   "private": true,
   "scripts": {
     "start": "nest start",

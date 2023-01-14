@@ -19,6 +19,7 @@ import {
 } from "class-validator";
 import { OrderCreateNestedManyWithoutProductsInput } from "./OrderCreateNestedManyWithoutProductsInput";
 import { Type } from "class-transformer";
+
 @InputType()
 class ProductCreateInput {
   @ApiProperty({
@@ -66,4 +67,5 @@ class ProductCreateInput {
   })
   orders?: OrderCreateNestedManyWithoutProductsInput;
 }
+
 export { ProductCreateInput };

@@ -14,6 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, IsJSON } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
+
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -61,4 +62,5 @@ class UserCreateInput {
   @Field(() => String)
   username!: string;
 }
+
 export { UserCreateInput };

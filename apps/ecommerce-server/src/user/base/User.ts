@@ -15,6 +15,7 @@ import { IsDate, IsString, IsOptional, IsJSON } from "class-validator";
 import { Type } from "class-transformer";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
+
 @ObjectType()
 class User {
   @ApiProperty({
@@ -78,4 +79,5 @@ class User {
   @Field(() => String)
   username!: string;
 }
+
 export { User };

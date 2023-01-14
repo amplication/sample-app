@@ -15,6 +15,7 @@ import { AddressWhereUniqueInput } from "../../address/base/AddressWhereUniqueIn
 import { ValidateNested, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
 import { OrderCreateNestedManyWithoutCustomersInput } from "./OrderCreateNestedManyWithoutCustomersInput";
+
 @InputType()
 class CustomerCreateInput {
   @ApiProperty({
@@ -85,4 +86,5 @@ class CustomerCreateInput {
   })
   phone?: string | null;
 }
+
 export { CustomerCreateInput };

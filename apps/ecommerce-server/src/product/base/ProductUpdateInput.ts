@@ -19,6 +19,7 @@ import {
 } from "class-validator";
 import { OrderUpdateManyWithoutProductsInput } from "./OrderUpdateManyWithoutProductsInput";
 import { Type } from "class-transformer";
+
 @InputType()
 class ProductUpdateInput {
   @ApiProperty({
@@ -66,4 +67,5 @@ class ProductUpdateInput {
   })
   orders?: OrderUpdateManyWithoutProductsInput;
 }
+
 export { ProductUpdateInput };

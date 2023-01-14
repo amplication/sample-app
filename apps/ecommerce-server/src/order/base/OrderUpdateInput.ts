@@ -15,6 +15,7 @@ import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqu
 import { ValidateNested, IsOptional, IsNumber, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 import { ProductWhereUniqueInput } from "../../product/base/ProductWhereUniqueInput";
+
 @InputType()
 class OrderUpdateInput {
   @ApiProperty({
@@ -74,4 +75,5 @@ class OrderUpdateInput {
   })
   totalPrice?: number | null;
 }
+
 export { OrderUpdateInput };
