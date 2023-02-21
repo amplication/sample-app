@@ -50,4 +50,4 @@ class OrderFindManyArgs {
   take?: number;
 }
 
-export { OrderFindManyArgs };
+export { OrderFindManyArgs as OrderFindManyArgs };

@@ -90,4 +90,4 @@ class OrderWhereInput {
   totalPrice?: IntNullableFilter;
 }
 
-export { OrderWhereInput };
+export { OrderWhereInput as OrderWhereInput };

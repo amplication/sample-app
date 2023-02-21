@@ -43,4 +43,4 @@ class CustomerUpdateManyWithoutAddressesInput {
   set?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerUpdateManyWithoutAddressesInput };
+export { CustomerUpdateManyWithoutAddressesInput as CustomerUpdateManyWithoutAddressesInput };

@@ -21,4 +21,4 @@ class UpdateCustomerArgs {
   data!: CustomerUpdateInput;
 }
 
-export { UpdateCustomerArgs };
+export { UpdateCustomerArgs as UpdateCustomerArgs };

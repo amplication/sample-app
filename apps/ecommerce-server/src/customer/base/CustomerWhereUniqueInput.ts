@@ -24,4 +24,4 @@ class CustomerWhereUniqueInput {
   id!: string;
 }
 
-export { CustomerWhereUniqueInput };
+export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };

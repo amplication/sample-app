@@ -90,4 +90,4 @@ class Product {
   updatedAt!: Date;
 }
 
-export { Product };
+export { Product as Product };

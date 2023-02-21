@@ -18,4 +18,4 @@ class OrderFindUniqueArgs {
   where!: OrderWhereUniqueInput;
 }
 
-export { OrderFindUniqueArgs };
+export { OrderFindUniqueArgs as OrderFindUniqueArgs };

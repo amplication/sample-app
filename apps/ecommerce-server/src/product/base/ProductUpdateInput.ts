@@ -68,4 +68,4 @@ class ProductUpdateInput {
   orders?: OrderUpdateManyWithoutProductsInput;
 }
 
-export { ProductUpdateInput };
+export { ProductUpdateInput as ProductUpdateInput };

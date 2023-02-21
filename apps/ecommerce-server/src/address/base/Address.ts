@@ -112,4 +112,4 @@ class Address {
   zip!: number | null;
 }
 
-export { Address };
+export { Address as Address };

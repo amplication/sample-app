@@ -68,4 +68,4 @@ class ProductCreateInput {
   orders?: OrderCreateNestedManyWithoutProductsInput;
 }
 
-export { ProductCreateInput };
+export { ProductCreateInput as ProductCreateInput };

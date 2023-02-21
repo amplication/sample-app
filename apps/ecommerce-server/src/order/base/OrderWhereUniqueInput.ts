@@ -24,4 +24,4 @@ class OrderWhereUniqueInput {
   id!: string;
 }
 
-export { OrderWhereUniqueInput };
+export { OrderWhereUniqueInput as OrderWhereUniqueInput };

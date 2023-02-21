@@ -50,4 +50,4 @@ class ProductFindManyArgs {
   take?: number;
 }
 
-export { ProductFindManyArgs };
+export { ProductFindManyArgs as ProductFindManyArgs };

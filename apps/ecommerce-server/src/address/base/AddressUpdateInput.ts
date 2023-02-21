@@ -85,4 +85,4 @@ class AddressUpdateInput {
   zip?: number | null;
 }
 
-export { AddressUpdateInput };
+export { AddressUpdateInput as AddressUpdateInput };

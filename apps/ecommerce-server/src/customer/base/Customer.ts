@@ -105,4 +105,4 @@ class Customer {
   updatedAt!: Date;
 }
 
-export { Customer };
+export { Customer as Customer };

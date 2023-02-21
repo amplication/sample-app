@@ -101,4 +101,4 @@ class Order {
   updatedAt!: Date;
 }
 
-export { Order };
+export { Order as Order };

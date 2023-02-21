@@ -25,4 +25,4 @@ class CustomerCreateNestedManyWithoutAddressesInput {
   connect?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerCreateNestedManyWithoutAddressesInput };
+export { CustomerCreateNestedManyWithoutAddressesInput as CustomerCreateNestedManyWithoutAddressesInput };

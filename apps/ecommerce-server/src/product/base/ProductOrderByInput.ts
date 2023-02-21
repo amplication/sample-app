@@ -73,4 +73,4 @@ class ProductOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { ProductOrderByInput };
+export { ProductOrderByInput as ProductOrderByInput };

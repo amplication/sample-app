@@ -99,4 +99,4 @@ class AddressWhereInput {
   zip?: IntNullableFilter;
 }
 
-export { AddressWhereInput };
+export { AddressWhereInput as AddressWhereInput };

@@ -76,4 +76,4 @@ class OrderCreateInput {
   totalPrice?: number | null;
 }
 
-export { OrderCreateInput };
+export { OrderCreateInput as OrderCreateInput };

@@ -77,4 +77,4 @@ class ProductWhereInput {
   orders?: OrderListRelationFilter;
 }
 
-export { ProductWhereInput };
+export { ProductWhereInput as ProductWhereInput };
