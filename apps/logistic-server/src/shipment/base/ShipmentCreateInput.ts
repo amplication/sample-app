@@ -41,4 +41,4 @@ class ShipmentCreateInput {
   warehouse?: WarehouseCreateNestedManyWithoutShipmentsInput;
 }
 
-export { ShipmentCreateInput };
+export { ShipmentCreateInput as ShipmentCreateInput };

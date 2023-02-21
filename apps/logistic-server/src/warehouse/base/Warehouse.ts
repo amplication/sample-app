@@ -73,4 +73,4 @@ class Warehouse {
   updatedAt!: Date;
 }
 
-export { Warehouse };
+export { Warehouse as Warehouse };

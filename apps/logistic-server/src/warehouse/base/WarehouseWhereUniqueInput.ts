@@ -24,4 +24,4 @@ class WarehouseWhereUniqueInput {
   id!: string;
 }
 
-export { WarehouseWhereUniqueInput };
+export { WarehouseWhereUniqueInput as WarehouseWhereUniqueInput };

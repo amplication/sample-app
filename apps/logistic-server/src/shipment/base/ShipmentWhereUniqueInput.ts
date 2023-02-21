@@ -24,4 +24,4 @@ class ShipmentWhereUniqueInput {
   id!: string;
 }
 
-export { ShipmentWhereUniqueInput };
+export { ShipmentWhereUniqueInput as ShipmentWhereUniqueInput };

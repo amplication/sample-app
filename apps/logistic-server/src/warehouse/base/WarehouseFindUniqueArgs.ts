@@ -18,4 +18,4 @@ class WarehouseFindUniqueArgs {
   where!: WarehouseWhereUniqueInput;
 }
 
-export { WarehouseFindUniqueArgs };
+export { WarehouseFindUniqueArgs as WarehouseFindUniqueArgs };

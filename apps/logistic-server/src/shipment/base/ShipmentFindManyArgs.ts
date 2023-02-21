@@ -50,4 +50,4 @@ class ShipmentFindManyArgs {
   take?: number;
 }
 
-export { ShipmentFindManyArgs };
+export { ShipmentFindManyArgs as ShipmentFindManyArgs };

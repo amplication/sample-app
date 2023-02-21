@@ -11,13 +11,13 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
-import * as nestAccessControl from "nest-access-control";
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ShipmentService } from "../shipment.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
@@ -30,6 +30,7 @@ import { Shipment } from "./Shipment";
 import { WarehouseFindManyArgs } from "../../warehouse/base/WarehouseFindManyArgs";
 import { Warehouse } from "../../warehouse/base/Warehouse";
 import { WarehouseWhereUniqueInput } from "../../warehouse/base/WarehouseWhereUniqueInput";
+
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ShipmentControllerBase {
@@ -37,16 +38,17 @@ export class ShipmentControllerBase {
     protected readonly service: ShipmentService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
   @common.UseInterceptors(AclValidateRequestInterceptor)
+  @common.Post()
+  @swagger.ApiCreatedResponse({ type: Shipment })
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "create",
     possession: "any",
   })
-  @common.Post()
-  @swagger.ApiCreatedResponse({ type: Shipment })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async create(@common.Body() data: ShipmentCreateInput): Promise<Shipment> {
     return await this.service.create({
       data: data,
@@ -60,15 +62,17 @@ export class ShipmentControllerBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [Shipment] })
+  @ApiNestedQuery(ShipmentFindManyArgs)
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "read",
     possession: "any",
   })
-  @common.Get()
-  @swagger.ApiOkResponse({ type: [Shipment] })
-  @swagger.ApiForbiddenResponse()
-  @ApiNestedQuery(ShipmentFindManyArgs)
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async findMany(@common.Req() request: Request): Promise<Shipment[]> {
     const args = plainToClass(ShipmentFindManyArgs, request.query);
     return this.service.findMany({
@@ -83,15 +87,17 @@ export class ShipmentControllerBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id")
+  @swagger.ApiOkResponse({ type: Shipment })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "read",
     possession: "own",
   })
-  @common.Get("/:id")
-  @swagger.ApiOkResponse({ type: Shipment })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async findOne(
     @common.Param() params: ShipmentWhereUniqueInput
   ): Promise<Shipment | null> {
@@ -113,15 +119,17 @@ export class ShipmentControllerBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
+  @common.Patch("/:id")
+  @swagger.ApiOkResponse({ type: Shipment })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "update",
     possession: "any",
   })
-  @common.Patch("/:id")
-  @swagger.ApiOkResponse({ type: Shipment })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async update(
     @common.Param() params: ShipmentWhereUniqueInput,
     @common.Body() data: ShipmentUpdateInput
@@ -147,15 +155,17 @@ export class ShipmentControllerBase {
     }
   }
 
+  @common.Delete("/:id")
+  @swagger.ApiOkResponse({ type: Shipment })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "delete",
     possession: "any",
   })
-  @common.Delete("/:id")
-  @swagger.ApiOkResponse({ type: Shipment })
-  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async delete(
     @common.Param() params: ShipmentWhereUniqueInput
   ): Promise<Shipment | null> {
@@ -180,13 +190,13 @@ export class ShipmentControllerBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/warehouse")
+  @ApiNestedQuery(WarehouseFindManyArgs)
   @nestAccessControl.UseRoles({
     resource: "Warehouse",
     action: "read",
     possession: "any",
   })
-  @common.Get("/:id/warehouse")
-  @ApiNestedQuery(WarehouseFindManyArgs)
   async findManyWarehouse(
     @common.Req() request: Request,
     @common.Param() params: ShipmentWhereUniqueInput
@@ -210,12 +220,12 @@ export class ShipmentControllerBase {
     return results;
   }
 
+  @common.Post("/:id/warehouse")
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "update",
     possession: "any",
   })
-  @common.Post("/:id/warehouse")
   async connectWarehouse(
     @common.Param() params: ShipmentWhereUniqueInput,
     @common.Body() body: WarehouseWhereUniqueInput[]
@@ -232,12 +242,12 @@ export class ShipmentControllerBase {
     });
   }
 
+  @common.Patch("/:id/warehouse")
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "update",
     possession: "any",
   })
-  @common.Patch("/:id/warehouse")
   async updateWarehouse(
     @common.Param() params: ShipmentWhereUniqueInput,
     @common.Body() body: WarehouseWhereUniqueInput[]
@@ -254,12 +264,12 @@ export class ShipmentControllerBase {
     });
   }
 
+  @common.Delete("/:id/warehouse")
   @nestAccessControl.UseRoles({
     resource: "Shipment",
     action: "update",
     possession: "any",
   })
-  @common.Delete("/:id/warehouse")
   async disconnectWarehouse(
     @common.Param() params: ShipmentWhereUniqueInput,
     @common.Body() body: WarehouseWhereUniqueInput[]

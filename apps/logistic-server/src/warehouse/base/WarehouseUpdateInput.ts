@@ -52,4 +52,4 @@ class WarehouseUpdateInput {
   shipments?: ShipmentUpdateManyWithoutWarehousesInput;
 }
 
-export { WarehouseUpdateInput };
+export { WarehouseUpdateInput as WarehouseUpdateInput };

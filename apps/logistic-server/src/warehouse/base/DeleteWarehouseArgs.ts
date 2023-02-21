@@ -18,4 +18,4 @@ class DeleteWarehouseArgs {
   where!: WarehouseWhereUniqueInput;
 }
 
-export { DeleteWarehouseArgs };
+export { DeleteWarehouseArgs as DeleteWarehouseArgs };

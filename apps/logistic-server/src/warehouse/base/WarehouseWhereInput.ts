@@ -65,4 +65,4 @@ class WarehouseWhereInput {
   shipments?: ShipmentListRelationFilter;
 }
 
-export { WarehouseWhereInput };
+export { WarehouseWhereInput as WarehouseWhereInput };

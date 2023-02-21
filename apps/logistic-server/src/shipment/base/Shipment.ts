@@ -62,4 +62,4 @@ class Shipment {
   warehouse?: Array<Warehouse>;
 }
 
-export { Shipment };
+export { Shipment as Shipment };

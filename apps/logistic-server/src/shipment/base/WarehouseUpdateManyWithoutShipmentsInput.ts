@@ -43,4 +43,4 @@ class WarehouseUpdateManyWithoutShipmentsInput {
   set?: Array<WarehouseWhereUniqueInput>;
 }
 
-export { WarehouseUpdateManyWithoutShipmentsInput };
+export { WarehouseUpdateManyWithoutShipmentsInput as WarehouseUpdateManyWithoutShipmentsInput };

@@ -25,4 +25,4 @@ class WarehouseCreateNestedManyWithoutShipmentsInput {
   connect?: Array<WarehouseWhereUniqueInput>;
 }
 
-export { WarehouseCreateNestedManyWithoutShipmentsInput };
+export { WarehouseCreateNestedManyWithoutShipmentsInput as WarehouseCreateNestedManyWithoutShipmentsInput };

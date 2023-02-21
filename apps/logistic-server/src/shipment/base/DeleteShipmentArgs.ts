@@ -18,4 +18,4 @@ class DeleteShipmentArgs {
   where!: ShipmentWhereUniqueInput;
 }
 
-export { DeleteShipmentArgs };
+export { DeleteShipmentArgs as DeleteShipmentArgs };

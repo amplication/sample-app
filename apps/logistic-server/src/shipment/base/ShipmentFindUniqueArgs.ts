@@ -18,4 +18,4 @@ class ShipmentFindUniqueArgs {
   where!: ShipmentWhereUniqueInput;
 }
 
-export { ShipmentFindUniqueArgs };
+export { ShipmentFindUniqueArgs as ShipmentFindUniqueArgs };
