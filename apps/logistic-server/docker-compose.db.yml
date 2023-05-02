@@ -8,6 +8,18 @@ services:
       - ${DB_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - localhost
+        - -u
+        - ${DB_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
   adminer:
     image: adminer
     restart: always
