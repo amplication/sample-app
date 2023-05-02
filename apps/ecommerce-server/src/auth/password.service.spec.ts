@@ -1,7 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { PasswordService } from "./password.service";
-import * as bcrypt from "bcrypt";
 
 const EXAMPLE_PASSWORD = "examplePassword";
 const EXAMPLE_HASHED_PASSWORD = "exampleHashedPassword";
@@ -12,11 +11,16 @@ const configServiceGetMock = jest.fn(() => {
   return EXAMPLE_SALT_OR_ROUNDS;
 });
 
-jest.mock("bcrypt");
+jest.mock("bcrypt", () => ({
+  hash: jest.fn(),
+  compare: jest.fn(),
+}));
 
-bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
+const { hash, compare } = jest.requireMock("bcrypt");
 
-bcrypt.compare.mockImplementation(async () => true);
+hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
+
+compare.mockImplementation(async () => true);
 
 describe("PasswordService", () => {
   let service: PasswordService;
