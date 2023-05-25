@@ -9,14 +9,14 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateOrderArgs } from "./CreateOrderArgs";
@@ -28,9 +28,8 @@ import { Order } from "./Order";
 import { Customer } from "../../customer/base/Customer";
 import { Product } from "../../product/base/Product";
 import { OrderService } from "../order.service";
-
-@graphql.Resolver(() => Order)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => Order)
 export class OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -173,13 +172,18 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Customer, { nullable: true })
+  @graphql.ResolveField(() => Customer, {
+    nullable: true,
+    name: "customer",
+  })
   @nestAccessControl.UseRoles({
     resource: "Customer",
     action: "read",
     possession: "any",
   })
-  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+  async resolveFieldCustomer(
+    @graphql.Parent() parent: Order
+  ): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -189,13 +193,18 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Product, { nullable: true })
+  @graphql.ResolveField(() => Product, {
+    nullable: true,
+    name: "product",
+  })
   @nestAccessControl.UseRoles({
     resource: "Product",
     action: "read",
     possession: "any",
   })
-  async product(@graphql.Parent() parent: Order): Promise<Product | null> {
+  async resolveFieldProduct(
+    @graphql.Parent() parent: Order
+  ): Promise<Product | null> {
     const result = await this.service.getProduct(parent.id);
 
     if (!result) {

@@ -18,4 +18,4 @@ class CreateCustomerArgs {
   data!: CustomerCreateInput;
 }
 
-export { CreateCustomerArgs };
+export { CreateCustomerArgs as CreateCustomerArgs };

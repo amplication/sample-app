@@ -91,4 +91,4 @@ class AddressOrderByInput {
   zip?: SortOrder;
 }
 
-export { AddressOrderByInput };
+export { AddressOrderByInput as AddressOrderByInput };

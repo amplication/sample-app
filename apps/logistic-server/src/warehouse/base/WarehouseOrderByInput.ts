@@ -64,4 +64,4 @@ class WarehouseOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { WarehouseOrderByInput };
+export { WarehouseOrderByInput as WarehouseOrderByInput };

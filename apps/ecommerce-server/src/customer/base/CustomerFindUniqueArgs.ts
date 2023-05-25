@@ -18,4 +18,4 @@ class CustomerFindUniqueArgs {
   where!: CustomerWhereUniqueInput;
 }
 
-export { CustomerFindUniqueArgs };
+export { CustomerFindUniqueArgs as CustomerFindUniqueArgs };

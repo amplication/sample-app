@@ -55,4 +55,4 @@ class ShipmentOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { ShipmentOrderByInput };
+export { ShipmentOrderByInput as ShipmentOrderByInput };

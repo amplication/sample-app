@@ -18,4 +18,4 @@ class CreateOrderArgs {
   data!: OrderCreateInput;
 }
 
-export { CreateOrderArgs };
+export { CreateOrderArgs as CreateOrderArgs };

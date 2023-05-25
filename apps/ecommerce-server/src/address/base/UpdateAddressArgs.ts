@@ -21,4 +21,4 @@ class UpdateAddressArgs {
   data!: AddressUpdateInput;
 }
 
-export { UpdateAddressArgs };
+export { UpdateAddressArgs as UpdateAddressArgs };

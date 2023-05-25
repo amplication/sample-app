@@ -18,4 +18,4 @@ class ProductFindUniqueArgs {
   where!: ProductWhereUniqueInput;
 }
 
-export { ProductFindUniqueArgs };
+export { ProductFindUniqueArgs as ProductFindUniqueArgs };

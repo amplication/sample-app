@@ -18,4 +18,4 @@ class CreateProductArgs {
   data!: ProductCreateInput;
 }
 
-export { CreateProductArgs };
+export { CreateProductArgs as CreateProductArgs };

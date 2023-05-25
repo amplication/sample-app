@@ -18,4 +18,4 @@ class DeleteAddressArgs {
   where!: AddressWhereUniqueInput;
 }
 
-export { DeleteAddressArgs };
+export { DeleteAddressArgs as DeleteAddressArgs };

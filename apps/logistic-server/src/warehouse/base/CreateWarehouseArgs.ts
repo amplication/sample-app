@@ -18,4 +18,4 @@ class CreateWarehouseArgs {
   data!: WarehouseCreateInput;
 }
 
-export { CreateWarehouseArgs };
+export { CreateWarehouseArgs as CreateWarehouseArgs };

@@ -16,6 +16,7 @@ import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 import { StringFilter } from "../../util/StringFilter";
 import { ShipmentListRelationFilter } from "../../shipment/base/ShipmentListRelationFilter";
+
 @InputType()
 class WarehouseWhereInput {
   @ApiProperty({
@@ -63,4 +64,5 @@ class WarehouseWhereInput {
   })
   shipments?: ShipmentListRelationFilter;
 }
-export { WarehouseWhereInput };
+
+export { WarehouseWhereInput as WarehouseWhereInput };

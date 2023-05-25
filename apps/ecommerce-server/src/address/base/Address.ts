@@ -20,6 +20,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Customer } from "../../customer/base/Customer";
+
 @ObjectType()
 class Address {
   @ApiProperty({
@@ -110,4 +111,5 @@ class Address {
   })
   zip!: number | null;
 }
-export { Address };
+
+export { Address as Address };

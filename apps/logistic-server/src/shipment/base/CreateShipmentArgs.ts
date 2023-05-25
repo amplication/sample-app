@@ -18,4 +18,4 @@ class CreateShipmentArgs {
   data!: ShipmentCreateInput;
 }
 
-export { CreateShipmentArgs };
+export { CreateShipmentArgs as CreateShipmentArgs };

@@ -21,4 +21,4 @@ class UpdateShipmentArgs {
   data!: ShipmentUpdateInput;
 }
 
-export { UpdateShipmentArgs };
+export { UpdateShipmentArgs as UpdateShipmentArgs };

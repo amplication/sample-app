@@ -21,4 +21,4 @@ class UpdateWarehouseArgs {
   data!: WarehouseUpdateInput;
 }
 
-export { UpdateWarehouseArgs };
+export { UpdateWarehouseArgs as UpdateWarehouseArgs };

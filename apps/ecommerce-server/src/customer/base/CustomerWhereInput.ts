@@ -17,6 +17,7 @@ import { Type } from "class-transformer";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { StringFilter } from "../../util/StringFilter";
 import { OrderListRelationFilter } from "../../order/base/OrderListRelationFilter";
+
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
@@ -98,4 +99,5 @@ class CustomerWhereInput {
   })
   phone?: StringNullableFilter;
 }
-export { CustomerWhereInput };
+
+export { CustomerWhereInput as CustomerWhereInput };

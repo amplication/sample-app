@@ -18,4 +18,4 @@ class AddressFindUniqueArgs {
   where!: AddressWhereUniqueInput;
 }
 
-export { AddressFindUniqueArgs };
+export { AddressFindUniqueArgs as AddressFindUniqueArgs };

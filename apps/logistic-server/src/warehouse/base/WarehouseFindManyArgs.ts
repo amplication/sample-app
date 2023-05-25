@@ -50,4 +50,4 @@ class WarehouseFindManyArgs {
   take?: number;
 }
 
-export { WarehouseFindManyArgs };
+export { WarehouseFindManyArgs as WarehouseFindManyArgs };
