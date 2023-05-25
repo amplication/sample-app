@@ -148,13 +148,13 @@ export class AddressResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Customer])
+  @graphql.ResolveField(() => [Customer], { name: "customers" })
   @nestAccessControl.UseRoles({
     resource: "Customer",
     action: "read",
     possession: "any",
   })
-  async customers(
+  async resolveFieldCustomers(
     @graphql.Parent() parent: Address,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {

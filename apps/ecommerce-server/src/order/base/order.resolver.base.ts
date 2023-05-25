@@ -172,13 +172,18 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Customer, { nullable: true })
+  @graphql.ResolveField(() => Customer, {
+    nullable: true,
+    name: "customer",
+  })
   @nestAccessControl.UseRoles({
     resource: "Customer",
     action: "read",
     possession: "any",
   })
-  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+  async resolveFieldCustomer(
+    @graphql.Parent() parent: Order
+  ): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -188,13 +193,18 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Product, { nullable: true })
+  @graphql.ResolveField(() => Product, {
+    nullable: true,
+    name: "product",
+  })
   @nestAccessControl.UseRoles({
     resource: "Product",
     action: "read",
     possession: "any",
   })
-  async product(@graphql.Parent() parent: Order): Promise<Product | null> {
+  async resolveFieldProduct(
+    @graphql.Parent() parent: Order
+  ): Promise<Product | null> {
     const result = await this.service.getProduct(parent.id);
 
     if (!result) {

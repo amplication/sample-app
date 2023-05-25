@@ -148,13 +148,13 @@ export class ProductResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Order])
+  @graphql.ResolveField(() => [Order], { name: "orders" })
   @nestAccessControl.UseRoles({
     resource: "Order",
     action: "read",
     possession: "any",
   })
-  async orders(
+  async resolveFieldOrders(
     @graphql.Parent() parent: Product,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
