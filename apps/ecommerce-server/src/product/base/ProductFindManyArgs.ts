@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { ProductWhereInput } from "./ProductWhereInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 import { ProductOrderByInput } from "./ProductOrderByInput";
 
@@ -21,6 +22,8 @@ class ProductFindManyArgs {
     required: false,
     type: () => ProductWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => ProductWhereInput, { nullable: true })
   @Type(() => ProductWhereInput)
   where?: ProductWhereInput;
@@ -29,6 +32,8 @@ class ProductFindManyArgs {
     required: false,
     type: [ProductOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [ProductOrderByInput], { nullable: true })
   @Type(() => ProductOrderByInput)
   orderBy?: Array<ProductOrderByInput>;
@@ -37,6 +42,8 @@ class ProductFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -45,9 +52,11 @@ class ProductFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
 }
 
-export { ProductFindManyArgs };
+export { ProductFindManyArgs as ProductFindManyArgs };

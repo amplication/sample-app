@@ -13,12 +13,16 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
+  MaxLength,
   IsOptional,
   IsNumber,
+  Min,
+  Max,
   ValidateNested,
 } from "class-validator";
 import { OrderUpdateManyWithoutProductsInput } from "./OrderUpdateManyWithoutProductsInput";
 import { Type } from "class-transformer";
+
 @InputType()
 class ProductUpdateInput {
   @ApiProperty({
@@ -26,6 +30,7 @@ class ProductUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -37,6 +42,8 @@ class ProductUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -48,6 +55,7 @@ class ProductUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -66,4 +74,5 @@ class ProductUpdateInput {
   })
   orders?: OrderUpdateManyWithoutProductsInput;
 }
-export { ProductUpdateInput };
+
+export { ProductUpdateInput as ProductUpdateInput };

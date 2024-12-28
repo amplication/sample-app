@@ -27,10 +27,10 @@ export const AddressShow = (props: ShowProps): React.ReactElement => {
         <TextField label="Zip" source="zip" />
         <ReferenceManyField
           reference="Customer"
-          target="AddressId"
+          target="addressId"
           label="Customers"
         >
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <ReferenceField
               label="Address"
               source="address.id"

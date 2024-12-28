@@ -12,9 +12,15 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { AddressWhereUniqueInput } from "../../address/base/AddressWhereUniqueInput";
-import { ValidateNested, IsOptional, IsString } from "class-validator";
+import {
+  ValidateNested,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { OrderUpdateManyWithoutCustomersInput } from "./OrderUpdateManyWithoutCustomersInput";
+
 @InputType()
 class CustomerUpdateInput {
   @ApiProperty({
@@ -45,6 +51,7 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -56,6 +63,7 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -79,10 +87,12 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   phone?: string | null;
 }
-export { CustomerUpdateInput };
+
+export { CustomerUpdateInput as CustomerUpdateInput };

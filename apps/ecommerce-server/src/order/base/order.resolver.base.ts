@@ -9,28 +9,28 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { Order } from "./Order";
+import { OrderCountArgs } from "./OrderCountArgs";
+import { OrderFindManyArgs } from "./OrderFindManyArgs";
+import { OrderFindUniqueArgs } from "./OrderFindUniqueArgs";
 import { CreateOrderArgs } from "./CreateOrderArgs";
 import { UpdateOrderArgs } from "./UpdateOrderArgs";
 import { DeleteOrderArgs } from "./DeleteOrderArgs";
-import { OrderFindManyArgs } from "./OrderFindManyArgs";
-import { OrderFindUniqueArgs } from "./OrderFindUniqueArgs";
-import { Order } from "./Order";
 import { Customer } from "../../customer/base/Customer";
 import { Product } from "../../product/base/Product";
 import { OrderService } from "../order.service";
-
-@graphql.Resolver(() => Order)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => Order)
 export class OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -44,15 +44,11 @@ export class OrderResolverBase {
     possession: "any",
   })
   async _ordersMeta(
-    @graphql.Args() args: OrderFindManyArgs
+    @graphql.Args() args: OrderCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 
@@ -64,7 +60,7 @@ export class OrderResolverBase {
     possession: "any",
   })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
-    return this.service.findMany(args);
+    return this.service.orders(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -77,7 +73,7 @@ export class OrderResolverBase {
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.order(args);
     if (result === null) {
       return null;
     }
@@ -92,7 +88,7 @@ export class OrderResolverBase {
     possession: "any",
   })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       ...args,
       data: {
         ...args.data,
@@ -123,7 +119,7 @@ export class OrderResolverBase {
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         ...args,
         data: {
           ...args.data,
@@ -143,7 +139,7 @@ export class OrderResolverBase {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -161,10 +157,10 @@ export class OrderResolverBase {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrder(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -173,13 +169,16 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Customer, { nullable: true })
+  @graphql.ResolveField(() => Customer, {
+    nullable: true,
+    name: "customer",
+  })
   @nestAccessControl.UseRoles({
     resource: "Customer",
     action: "read",
     possession: "any",
   })
-  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+  async getCustomer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -189,13 +188,16 @@ export class OrderResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => Product, { nullable: true })
+  @graphql.ResolveField(() => Product, {
+    nullable: true,
+    name: "product",
+  })
   @nestAccessControl.UseRoles({
     resource: "Product",
     action: "read",
     possession: "any",
   })
-  async product(@graphql.Parent() parent: Order): Promise<Product | null> {
+  async getProduct(@graphql.Parent() parent: Order): Promise<Product | null> {
     const result = await this.service.getProduct(parent.id);
 
     if (!result) {

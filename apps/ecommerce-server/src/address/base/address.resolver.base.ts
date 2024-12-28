@@ -9,28 +9,28 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { Address } from "./Address";
+import { AddressCountArgs } from "./AddressCountArgs";
+import { AddressFindManyArgs } from "./AddressFindManyArgs";
+import { AddressFindUniqueArgs } from "./AddressFindUniqueArgs";
 import { CreateAddressArgs } from "./CreateAddressArgs";
 import { UpdateAddressArgs } from "./UpdateAddressArgs";
 import { DeleteAddressArgs } from "./DeleteAddressArgs";
-import { AddressFindManyArgs } from "./AddressFindManyArgs";
-import { AddressFindUniqueArgs } from "./AddressFindUniqueArgs";
-import { Address } from "./Address";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
 import { Customer } from "../../customer/base/Customer";
 import { AddressService } from "../address.service";
-
-@graphql.Resolver(() => Address)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => Address)
 export class AddressResolverBase {
   constructor(
     protected readonly service: AddressService,
@@ -44,15 +44,11 @@ export class AddressResolverBase {
     possession: "any",
   })
   async _addressesMeta(
-    @graphql.Args() args: AddressFindManyArgs
+    @graphql.Args() args: AddressCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 
@@ -66,7 +62,7 @@ export class AddressResolverBase {
   async addresses(
     @graphql.Args() args: AddressFindManyArgs
   ): Promise<Address[]> {
-    return this.service.findMany(args);
+    return this.service.addresses(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -79,7 +75,7 @@ export class AddressResolverBase {
   async address(
     @graphql.Args() args: AddressFindUniqueArgs
   ): Promise<Address | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.address(args);
     if (result === null) {
       return null;
     }
@@ -96,7 +92,7 @@ export class AddressResolverBase {
   async createAddress(
     @graphql.Args() args: CreateAddressArgs
   ): Promise<Address> {
-    return await this.service.create({
+    return await this.service.createAddress({
       ...args,
       data: args.data,
     });
@@ -113,13 +109,13 @@ export class AddressResolverBase {
     @graphql.Args() args: UpdateAddressArgs
   ): Promise<Address | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateAddress({
         ...args,
         data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -137,10 +133,10 @@ export class AddressResolverBase {
     @graphql.Args() args: DeleteAddressArgs
   ): Promise<Address | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteAddress(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -149,13 +145,13 @@ export class AddressResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Customer])
+  @graphql.ResolveField(() => [Customer], { name: "customers" })
   @nestAccessControl.UseRoles({
     resource: "Customer",
     action: "read",
     possession: "any",
   })
-  async customers(
+  async findCustomers(
     @graphql.Parent() parent: Address,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {

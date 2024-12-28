@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
+
 @InputType()
 class OrderWhereUniqueInput {
   @ApiProperty({
@@ -22,4 +23,5 @@ class OrderWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
-export { OrderWhereUniqueInput };
+
+export { OrderWhereUniqueInput as OrderWhereUniqueInput };

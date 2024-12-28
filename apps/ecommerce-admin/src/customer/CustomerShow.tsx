@@ -31,10 +31,10 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
         <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField
           reference="Order"
-          target="CustomerId"
+          target="customerId"
           label="Orders"
         >
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <DateField source="createdAt" label="Created At" />
             <ReferenceField
               label="Customer"
