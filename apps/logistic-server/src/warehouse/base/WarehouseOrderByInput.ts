@@ -11,6 +11,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional, IsEnum } from "class-validator";
 import { SortOrder } from "../../util/SortOrder";
 
 @InputType({
@@ -22,6 +23,8 @@ class WarehouseOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -31,6 +34,8 @@ class WarehouseOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -40,6 +45,8 @@ class WarehouseOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -49,6 +56,8 @@ class WarehouseOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -58,10 +67,12 @@ class WarehouseOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
   updatedAt?: SortOrder;
 }
 
-export { WarehouseOrderByInput };
+export { WarehouseOrderByInput as WarehouseOrderByInput };

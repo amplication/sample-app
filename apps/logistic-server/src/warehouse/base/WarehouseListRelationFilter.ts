@@ -53,4 +53,4 @@ class WarehouseListRelationFilter {
   })
   none?: WarehouseWhereInput;
 }
-export { WarehouseListRelationFilter };
+export { WarehouseListRelationFilter as WarehouseListRelationFilter };

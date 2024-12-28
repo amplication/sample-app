@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { ShipmentWhereInput } from "./ShipmentWhereInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 import { ShipmentOrderByInput } from "./ShipmentOrderByInput";
 
@@ -21,6 +22,8 @@ class ShipmentFindManyArgs {
     required: false,
     type: () => ShipmentWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => ShipmentWhereInput, { nullable: true })
   @Type(() => ShipmentWhereInput)
   where?: ShipmentWhereInput;
@@ -29,6 +32,8 @@ class ShipmentFindManyArgs {
     required: false,
     type: [ShipmentOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [ShipmentOrderByInput], { nullable: true })
   @Type(() => ShipmentOrderByInput)
   orderBy?: Array<ShipmentOrderByInput>;
@@ -37,6 +42,8 @@ class ShipmentFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -45,9 +52,11 @@ class ShipmentFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
 }
 
-export { ShipmentFindManyArgs };
+export { ShipmentFindManyArgs as ShipmentFindManyArgs };

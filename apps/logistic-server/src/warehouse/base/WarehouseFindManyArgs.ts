@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { WarehouseWhereInput } from "./WarehouseWhereInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 import { WarehouseOrderByInput } from "./WarehouseOrderByInput";
 
@@ -21,6 +22,8 @@ class WarehouseFindManyArgs {
     required: false,
     type: () => WarehouseWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => WarehouseWhereInput, { nullable: true })
   @Type(() => WarehouseWhereInput)
   where?: WarehouseWhereInput;
@@ -29,6 +32,8 @@ class WarehouseFindManyArgs {
     required: false,
     type: [WarehouseOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [WarehouseOrderByInput], { nullable: true })
   @Type(() => WarehouseOrderByInput)
   orderBy?: Array<WarehouseOrderByInput>;
@@ -37,6 +42,8 @@ class WarehouseFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -45,9 +52,11 @@ class WarehouseFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
 }
 
-export { WarehouseFindManyArgs };
+export { WarehouseFindManyArgs as WarehouseFindManyArgs };

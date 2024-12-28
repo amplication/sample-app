@@ -9,48 +9,50 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from "nestjs-prisma";
-import { Prisma, Shipment, Warehouse } from "@prisma/client";
+import { PrismaService } from "../../prisma/prisma.service";
+import {
+  Prisma,
+  Shipment as PrismaShipment,
+  Warehouse as PrismaWarehouse,
+} from "@prisma/client";
 
 export class ShipmentServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ShipmentFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentFindManyArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.ShipmentCountArgs, "select">): Promise<number> {
     return this.prisma.shipment.count(args);
   }
 
-  async findMany<T extends Prisma.ShipmentFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentFindManyArgs>
-  ): Promise<Shipment[]> {
+  async shipments(
+    args: Prisma.ShipmentFindManyArgs
+  ): Promise<PrismaShipment[]> {
     return this.prisma.shipment.findMany(args);
   }
-  async findOne<T extends Prisma.ShipmentFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentFindUniqueArgs>
-  ): Promise<Shipment | null> {
+  async shipment(
+    args: Prisma.ShipmentFindUniqueArgs
+  ): Promise<PrismaShipment | null> {
     return this.prisma.shipment.findUnique(args);
   }
-  async create<T extends Prisma.ShipmentCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentCreateArgs>
-  ): Promise<Shipment> {
-    return this.prisma.shipment.create<T>(args);
+  async createShipment(
+    args: Prisma.ShipmentCreateArgs
+  ): Promise<PrismaShipment> {
+    return this.prisma.shipment.create(args);
   }
-  async update<T extends Prisma.ShipmentUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentUpdateArgs>
-  ): Promise<Shipment> {
-    return this.prisma.shipment.update<T>(args);
+  async updateShipment(
+    args: Prisma.ShipmentUpdateArgs
+  ): Promise<PrismaShipment> {
+    return this.prisma.shipment.update(args);
   }
-  async delete<T extends Prisma.ShipmentDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ShipmentDeleteArgs>
-  ): Promise<Shipment> {
+  async deleteShipment(
+    args: Prisma.ShipmentDeleteArgs
+  ): Promise<PrismaShipment> {
     return this.prisma.shipment.delete(args);
   }
 
   async findWarehouse(
     parentId: string,
     args: Prisma.WarehouseFindManyArgs
-  ): Promise<Warehouse[]> {
+  ): Promise<PrismaWarehouse[]> {
     return this.prisma.shipment
       .findUniqueOrThrow({
         where: { id: parentId },

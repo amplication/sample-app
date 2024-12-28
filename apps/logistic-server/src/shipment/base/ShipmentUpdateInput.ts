@@ -11,9 +11,15 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, ValidateNested } from "class-validator";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { WarehouseUpdateManyWithoutShipmentsInput } from "./WarehouseUpdateManyWithoutShipmentsInput";
 import { Type } from "class-transformer";
+
 @InputType()
 class ShipmentUpdateInput {
   @ApiProperty({
@@ -21,6 +27,7 @@ class ShipmentUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -39,4 +46,5 @@ class ShipmentUpdateInput {
   })
   warehouse?: WarehouseUpdateManyWithoutShipmentsInput;
 }
-export { ShipmentUpdateInput };
+
+export { ShipmentUpdateInput as ShipmentUpdateInput };
