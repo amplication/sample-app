@@ -9,28 +9,28 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { Product } from "./Product";
+import { ProductCountArgs } from "./ProductCountArgs";
+import { ProductFindManyArgs } from "./ProductFindManyArgs";
+import { ProductFindUniqueArgs } from "./ProductFindUniqueArgs";
 import { CreateProductArgs } from "./CreateProductArgs";
 import { UpdateProductArgs } from "./UpdateProductArgs";
 import { DeleteProductArgs } from "./DeleteProductArgs";
-import { ProductFindManyArgs } from "./ProductFindManyArgs";
-import { ProductFindUniqueArgs } from "./ProductFindUniqueArgs";
-import { Product } from "./Product";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { ProductService } from "../product.service";
-
-@graphql.Resolver(() => Product)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => Product)
 export class ProductResolverBase {
   constructor(
     protected readonly service: ProductService,
@@ -44,15 +44,11 @@ export class ProductResolverBase {
     possession: "any",
   })
   async _productsMeta(
-    @graphql.Args() args: ProductFindManyArgs
+    @graphql.Args() args: ProductCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 
@@ -66,7 +62,7 @@ export class ProductResolverBase {
   async products(
     @graphql.Args() args: ProductFindManyArgs
   ): Promise<Product[]> {
-    return this.service.findMany(args);
+    return this.service.products(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -79,7 +75,7 @@ export class ProductResolverBase {
   async product(
     @graphql.Args() args: ProductFindUniqueArgs
   ): Promise<Product | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.product(args);
     if (result === null) {
       return null;
     }
@@ -96,7 +92,7 @@ export class ProductResolverBase {
   async createProduct(
     @graphql.Args() args: CreateProductArgs
   ): Promise<Product> {
-    return await this.service.create({
+    return await this.service.createProduct({
       ...args,
       data: args.data,
     });
@@ -113,13 +109,13 @@ export class ProductResolverBase {
     @graphql.Args() args: UpdateProductArgs
   ): Promise<Product | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProduct({
         ...args,
         data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -137,10 +133,10 @@ export class ProductResolverBase {
     @graphql.Args() args: DeleteProductArgs
   ): Promise<Product | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteProduct(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -149,13 +145,13 @@ export class ProductResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Order])
+  @graphql.ResolveField(() => [Order], { name: "orders" })
   @nestAccessControl.UseRoles({
     resource: "Order",
     action: "read",
     possession: "any",
   })
-  async orders(
+  async findOrders(
     @graphql.Parent() parent: Product,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {

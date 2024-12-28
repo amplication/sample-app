@@ -53,4 +53,4 @@ class OrderListRelationFilter {
   })
   none?: OrderWhereInput;
 }
-export { OrderListRelationFilter };
+export { OrderListRelationFilter as OrderListRelationFilter };

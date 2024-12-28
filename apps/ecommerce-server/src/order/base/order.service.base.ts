@@ -9,45 +9,39 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from "nestjs-prisma";
-import { Prisma, Order, Customer, Product } from "@prisma/client";
+import { PrismaService } from "../../prisma/prisma.service";
+
+import {
+  Prisma,
+  Order as PrismaOrder,
+  Customer as PrismaCustomer,
+  Product as PrismaProduct,
+} from "@prisma/client";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<number> {
+  async count(args: Omit<Prisma.OrderCountArgs, "select">): Promise<number> {
     return this.prisma.order.count(args);
   }
 
-  async findMany<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<Order[]> {
+  async orders(args: Prisma.OrderFindManyArgs): Promise<PrismaOrder[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends Prisma.OrderFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
-  ): Promise<Order | null> {
+  async order(args: Prisma.OrderFindUniqueArgs): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
-  async create<T extends Prisma.OrderCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
-  ): Promise<Order> {
-    return this.prisma.order.create<T>(args);
+  async createOrder(args: Prisma.OrderCreateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.create(args);
   }
-  async update<T extends Prisma.OrderUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
-  ): Promise<Order> {
-    return this.prisma.order.update<T>(args);
+  async updateOrder(args: Prisma.OrderUpdateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.update(args);
   }
-  async delete<T extends Prisma.OrderDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
-  ): Promise<Order> {
+  async deleteOrder(args: Prisma.OrderDeleteArgs): Promise<PrismaOrder> {
     return this.prisma.order.delete(args);
   }
 
-  async getCustomer(parentId: string): Promise<Customer | null> {
+  async getCustomer(parentId: string): Promise<PrismaCustomer | null> {
     return this.prisma.order
       .findUnique({
         where: { id: parentId },
@@ -55,7 +49,7 @@ export class OrderServiceBase {
       .customer();
   }
 
-  async getProduct(parentId: string): Promise<Product | null> {
+  async getProduct(parentId: string): Promise<PrismaProduct | null> {
     return this.prisma.order
       .findUnique({
         where: { id: parentId },

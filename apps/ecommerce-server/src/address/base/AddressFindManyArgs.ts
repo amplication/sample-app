@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { AddressWhereInput } from "./AddressWhereInput";
+import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
 import { AddressOrderByInput } from "./AddressOrderByInput";
 
@@ -21,6 +22,8 @@ class AddressFindManyArgs {
     required: false,
     type: () => AddressWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => AddressWhereInput, { nullable: true })
   @Type(() => AddressWhereInput)
   where?: AddressWhereInput;
@@ -29,6 +32,8 @@ class AddressFindManyArgs {
     required: false,
     type: [AddressOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [AddressOrderByInput], { nullable: true })
   @Type(() => AddressOrderByInput)
   orderBy?: Array<AddressOrderByInput>;
@@ -37,6 +42,8 @@ class AddressFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -45,9 +52,11 @@ class AddressFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
 }
 
-export { AddressFindManyArgs };
+export { AddressFindManyArgs as AddressFindManyArgs };

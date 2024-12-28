@@ -12,9 +12,17 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqueInput";
-import { ValidateNested, IsOptional, IsNumber, IsInt } from "class-validator";
+import {
+  ValidateNested,
+  IsOptional,
+  IsNumber,
+  Min,
+  Max,
+  IsInt,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ProductWhereUniqueInput } from "../../product/base/ProductWhereUniqueInput";
+
 @InputType()
 class OrderCreateInput {
   @ApiProperty({
@@ -34,6 +42,8 @@ class OrderCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -57,6 +67,8 @@ class OrderCreateInput {
     type: Number,
   })
   @IsInt()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -68,10 +80,13 @@ class OrderCreateInput {
     type: Number,
   })
   @IsInt()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
   totalPrice?: number | null;
 }
-export { OrderCreateInput };
+
+export { OrderCreateInput as OrderCreateInput };

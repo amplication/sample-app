@@ -16,12 +16,15 @@ import {
   ValidateNested,
   IsOptional,
   IsNumber,
+  Min,
+  Max,
   IsString,
   IsInt,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Customer } from "../../customer/base/Customer";
 import { Product } from "../../product/base/Product";
+
 @ObjectType()
 class Order {
   @ApiProperty({
@@ -46,6 +49,8 @@ class Order {
     type: Number,
   })
   @IsNumber()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -74,6 +79,8 @@ class Order {
     type: Number,
   })
   @IsInt()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -85,6 +92,8 @@ class Order {
     type: Number,
   })
   @IsInt()
+  @Min(-999999999)
+  @Max(999999999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -99,4 +108,5 @@ class Order {
   @Field(() => Date)
   updatedAt!: Date;
 }
-export { Order };
+
+export { Order as Order };

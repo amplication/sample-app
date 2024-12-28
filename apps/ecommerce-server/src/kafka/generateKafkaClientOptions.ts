@@ -1,26 +1,25 @@
+import { ConfigService } from "@nestjs/config";
 import { KafkaOptions, Transport } from "@nestjs/microservices";
 
-export const generateKafkaClientOptions = (): KafkaOptions => {
-  if (!process.env.KAFKA_BROKERS) {
+export const generateKafkaClientOptions = (
+  configService: ConfigService
+): KafkaOptions => {
+  const kafkaBrokersString = configService.get("KAFKA_BROKERS");
+  const kafkaEnableSSL = configService.get("KAFKA_ENABLE_SSL") === "true";
+  const kafkaClientId = configService.get("KAFKA_CLIENT_ID");
+  const kafkaGroupId = configService.get("KAFKA_GROUP_ID");
+
+  if (!kafkaBrokersString) {
     throw new Error("KAFKA_BROKERS environment variable must be defined");
   }
 
-  if (!process.env.KAFKA_ENABLE_SSL) {
-    throw new Error("KAFKA_ENABLE_SSL environment variable must be defined");
-  }
-
-  if (!process.env.KAFKA_CLIENT_ID) {
+  if (!kafkaClientId) {
     throw new Error("KAFKA_CLIENT_ID environment variable must be defined");
   }
 
-  if (!process.env.KAFKA_GROUP_ID) {
+  if (!kafkaGroupId) {
     throw new Error("KAFKA_GROUP_ID environment variable must be defined");
   }
-
-  const kafkaBrokersString = process.env.KAFKA_BROKERS;
-  const kafkaEnableSSL = process.env.KAFKA_ENABLE_SSL === "true";
-  const kafkaClientId = process.env.KAFKA_CLIENT_ID;
-  const kafkaGroupId = process.env.KAFKA_GROUP_ID;
 
   return {
     transport: Transport.KAFKA,

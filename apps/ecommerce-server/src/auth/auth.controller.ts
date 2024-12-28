@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { Credentials } from "./Credentials";
+import { Credentials } from "../auth/Credentials";
 import { UserInfo } from "./UserInfo";
 
 @ApiTags("auth")
