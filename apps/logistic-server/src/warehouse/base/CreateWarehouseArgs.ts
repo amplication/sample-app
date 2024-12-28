@@ -10,12 +10,21 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
 import { WarehouseCreateInput } from "./WarehouseCreateInput";
+import { ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 
 @ArgsType()
 class CreateWarehouseArgs {
+  @ApiProperty({
+    required: true,
+    type: () => WarehouseCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => WarehouseCreateInput)
   @Field(() => WarehouseCreateInput, { nullable: false })
   data!: WarehouseCreateInput;
 }
 
-export { CreateWarehouseArgs };
+export { CreateWarehouseArgs as CreateWarehouseArgs };

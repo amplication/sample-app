@@ -11,9 +11,16 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsDate, ValidateNested } from "class-validator";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { Shipment } from "../../shipment/base/Shipment";
+
 @ObjectType()
 class Warehouse {
   @ApiProperty({
@@ -21,6 +28,7 @@ class Warehouse {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -48,6 +56,7 @@ class Warehouse {
     type: String,
   })
   @IsString()
+  @MaxLength(1000)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -71,4 +80,5 @@ class Warehouse {
   @Field(() => Date)
   updatedAt!: Date;
 }
-export { Warehouse };
+
+export { Warehouse as Warehouse };

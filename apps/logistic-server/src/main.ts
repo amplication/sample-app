@@ -2,15 +2,12 @@ import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
-  // eslint-disable-next-line
 } from "./swagger";
 
 const { PORT = 3000 } = process.env;
@@ -22,6 +19,7 @@ async function main() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      forbidUnknownValues: false,
     })
   );
 
@@ -38,6 +36,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
