@@ -1,0 +1,195 @@
+# AGENTS Guide for `amplication/sample-app`
+
+## 📦 Project Overview
+- Amplication-generated monorepo housing three independent services under `apps/`: two NestJS backends (`ecommerce-server`, `logistic-server`) and a React Admin frontend (`ecommerce-admin`).
+- Shared patterns: Prisma for data access, Kafka for messaging, `.env`-driven configuration, and service-specific `package.json`, `Dockerfile`, and `docker-compose` files. There is **no root-level `package.json`**—each service manages its own dependencies.
+- Technology stack highlights:
+  - **ecommerce-server:** NestJS + PostgreSQL + JWT + Kafka producer topics for order & product lifecycle.
+  - **logistic-server:** NestJS + MySQL + HTTP Basic Auth + Kafka consumers + dedicated NATS integration for logistics workflows.
+  - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `REACT_APP_SERVER_URL`.
+
+## 🗂️ Repository Layout
+- Root contains only `README.md` plus the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
+- Each backend service exposes a consistent structure: `Dockerfile`, `docker-compose*.yml`, `.env`, `package.json`, `prisma/schema.prisma`, `scripts/seed.ts`, and `src/` modules (auth, domain resources like `order/`, messaging folders like `kafka/` or `nats/`, and `tests/`).
+- The admin app includes Vite config (`vite.config.ts`), `src/` resources (e.g., `order/`, `product/`, `pages/Dashboard.tsx`), and utility folders (`auth-provider/`, `data-provider/`, `theme/`).
+
+```
+.
+├── README.md
+└── apps/
+    ├── ecommerce-server/
+    │   ├── README.md, package.json, Dockerfile, docker-compose*.yml
+    │   ├── prisma/schema.prisma & scripts/seed.ts
+    │   └── src/(order/, product/, auth/, kafka/, tests/, ...)
+    ├── logistic-server/
+    │   ├── README.md, package.json, Dockerfile, docker-compose*.yml
+    │   ├── prisma/schema.prisma & scripts/seed.ts
+    │   └── src/(shipment/, warehouse/, auth/, kafka/, nats/, tests/, ...)
+    └── ecommerce-admin/
+        ├── README.md, package.json, Dockerfile
+        └── src/(address/, order/, pages/Dashboard.tsx, api/, auth-provider/, ...)
+```
+
+## 🧩 Service Profiles
+### 🧮 ecommerce-server (`apps/ecommerce-server`)
+- **Role:** Order & product management API with JWT auth, PostgreSQL persistence, and Kafka producer integrations (`src/kafka/`).
+- **Core stack:** NestJS, Prisma, PostgreSQL, KafkaJS, Swagger, Jest.
+- **Local infra:** `docker-compose.dev.yml` launches PostgreSQL plus Kafka+Zookeeper+kafka-ui; `npm run docker:dev` wraps it.
+- **Credentials:** Default `admin` / `admin` account for dev/testing (documented in `apps/ecommerce-server/README.md`).
+
+| Name | Description | Default / Notes | Source |
+| --- | --- | --- | --- |
+| `BCRYPT_SALT` | Salt used for hashing | `[random-string]` | `apps/ecommerce-server/README.md` |
+| `COMPOSE_PROJECT_NAME` | Compose stack prefix | `amp_[service-identifier]` | same |
+| `PORT` | HTTP port | `3000` | same |
+| `DB_URL` | Prisma connection URL | `[provider]://[user]:[password]@localhost:[port]/[db]` | same |
+| `DB_PORT` | Database host port | provider-specific (`5432` default) | same |
+| `DB_USER` | Database user | `[username]` | same |
+| `DB_PASSWORD` | Database password | `[password]` | same |
+| `DB_NAME` | Database name | `[service-name]` | same |
+| `JWT_SECRET_KEY` | JWT signing secret | `[secret]` | same |
+| `JWT_EXPIRATION` | JWT TTL | `2d` | same |
+
+### 🚚 logistic-server (`apps/logistic-server`)
+- **Role:** Warehouse & shipment service secured with HTTP Basic auth, using MySQL storage, Kafka consumers, and NATS-based logistics messaging (`src/nats/`).
+- **Core stack:** NestJS, Prisma, MySQL, KafkaJS, `nats` client, Swagger, Jest.
+- **Local infra:** `docker-compose.dev.yml` provisions MySQL, Adminer, Kafka stack, kafka-ui, and an explicit `nats` container.
+- **Credentials:** Shares the generated `admin` / `admin` dev credentials; adjust Basic Auth secrets before production.
+
+| Name | Description | Default / Notes | Source |
+| --- | --- | --- | --- |
+| `BCRYPT_SALT` | Salt used for hashing | `[random-string]` | `apps/logistic-server/README.md` |
+| `COMPOSE_PROJECT_NAME` | Compose stack prefix | `amp_[service-identifier]` | same |
+| `PORT` | HTTP port | `3000` | same |
+| `DB_URL` | Prisma connection URL | `[provider]://[user]:[password]@localhost:[port]/[db]` | same |
+| `DB_PORT` | Database host port | provider-specific (`3306` default) | same |
+| `DB_USER` | Database user | `[username]` | same |
+| `DB_PASSWORD` | Database password | `[password]` | same |
+| `DB_NAME` | Database name | `[service-name]` | same |
+| `JWT_SECRET_KEY` | Token secret (used by guards) | `[secret]` | same |
+| `JWT_EXPIRATION` | Token TTL | `2d` | same |
+
+### 🖥️ ecommerce-admin (`apps/ecommerce-admin`)
+- **Role:** React Admin dashboard consuming the ecommerce GraphQL API; uses Vite for dev/build and React Admin resources under `src/<resource>/`.
+- **Core stack:** React 18, React Admin 5, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
+- **Local infra:** Expects the ecommerce server running; `REACT_APP_SERVER_URL` must point to that host/port.
+
+| Name | Description | Default / Notes | Source |
+| --- | --- | --- | --- |
+| `PORT` | Frontend dev server port | `3001` | `apps/ecommerce-admin/README.md` |
+| `REACT_APP_SERVER_URL` | Base URL for backend API | `http://localhost:[server-port]` | same |
+
+## 🛠️ Tooling & Scripts
+### Backend services (`apps/ecommerce-server`, `apps/logistic-server`)
+| Script | Purpose | File |
+| --- | --- | --- |
+| `npm run start` / `start:watch` / `start:debug` | Run NestJS server (optionally watch/debug). | `apps/*-server/package.json` |
+| `npm run build` | Compile via Nest CLI. | same |
+| `npm run test` | Execute Jest test suite (`ts-jest` preset). | same |
+| `npm run prisma:generate` | Generate Prisma client from `prisma/schema.prisma`. | same |
+| `npm run db:migrate-save` | Create a new Prisma migration (dev). | same |
+| `npm run db:migrate-up` | Apply migrations (deploy). | same |
+| `npm run db:clean` | Reset database via Prisma. | same |
+| `npm run db:init` | Runs `db:migrate-save`, `db:migrate-up`, then `seed`. | same |
+| `npm run seed` | Execute `scripts/seed.ts` (can be customized via `scripts/customSeed.ts`). | same |
+| `npm run docker:dev` | Start service-specific infra from `docker-compose.dev.yml`. | same |
+| `npm run compose:up` / `compose:down` | Run/tear down Dockerized app stack. | same |
+| `npm run package:container` | Build service Docker image via `Dockerfile`. | same |
+
+### Frontend (`apps/ecommerce-admin`)
+| Script | Purpose | File |
+| --- | --- | --- |
+| `npm run start` | Launch Vite dev server on `PORT`. | `apps/ecommerce-admin/package.json` |
+| `npm run build` | Production build output under `dist/`. | same |
+| `npm run serve` | Preview built assets with Vite preview. | same |
+| `npm run type-check` | Run TypeScript compiler without emit. | same |
+| `npm run lint` | Lint & auto-fix `src/` via ESLint. | same |
+| `npm run format` | Format `src/` via Prettier. | same |
+| `npm run package:container` | Build dashboard container image. | same |
+
+## 🚀 Development Workflow
+1. **Pick a service directory** (e.g., `cd apps/ecommerce-server`) and copy/adjust the provided `.env` file; never share sensitive overrides.
+2. **Install dependencies** with `npm install` inside that service.
+3. **Generate Prisma artifacts** via `npm run prisma:generate` (backends only) when schemas change.
+4. **Provision local infra** with `npm run docker:dev` to bring up the service’s database, Kafka stack, and (for logistics) NATS & Adminer.
+5. **Initialize data** using `npm run db:init` to run migrations plus `scripts/seed.ts`.
+6. **Start the service** with `npm run start` (servers) or `npm run start` from `apps/ecommerce-admin` after ensuring `REACT_APP_SERVER_URL` points at the running API.
+7. **Alternative container path:** `npm run compose:up` builds & runs the service container using the provided `Dockerfile` and compose file.
+
+## 🔗 Messaging & Integrations
+- **Kafka topics (from `README.md`):** `order.create.v1`, `order.update.v1`, `product.create.v1`, `product.update.v1`.
+  - `apps/ecommerce-server` sends messages on those topics (see `src/kafka/kafka.producer.service.ts`).
+  - `apps/logistic-server` consumes the same topics (`src/kafka/kafka.service.ts`).
+- **NATS (logistics):** `apps/logistic-server/docker-compose.dev.yml` defines a `nats` container, and the service implements handlers in `src/nats/` (`nats.module.ts`, `nats.service.ts`, `topics.ts`). Kafka and NATS clients are wired in `src/connectMicroservices.ts`.
+
+## ✅ Testing & Quality
+- **Backends:** Run `npm run test` inside each server to execute Jest suites configured via `ts-jest` (`package.json > jest`). Domain-focused specs live under `apps/ecommerce-server/src/tests/` and `apps/logistic-server/src/tests/` (e.g., `auth/token.service.spec.ts`, `health/health.service.spec.ts`).
+- **Frontend:** While no standalone `test` script is declared, quality gates rely on `npm run type-check`, `npm run lint`, `npm run format`, and `npm run build`. The Vite/React Testing Library setup is scaffolded in `src/setupTests.ts` should you add tests.
+- **Data prep:** Use `npm run seed` (servers) for deterministic fixtures before running suites; ensure Dockerized databases and brokers are already healthy.
+
+## ⚠️ Critical Rules & Security
+- `.env` files in each service contain generated secrets (hash salts, DB passwords, JWT keys); **never commit real credentials**. Follow README guidance to migrate secrets into a secure vault for production deployments.
+- Backends require their databases, Kafka, and (for logistics) NATS to be running before executing `npm run start`, `npm run test`, or any migrations—`docker:dev` is mandatory.
+- Default `admin` / `admin` credentials exist purely for local testing; rotate before exposing any environment publicly.
+- When editing Prisma schemas or seed scripts, regenerate the Prisma client and re-run migrations to avoid drift.
+
+## 📋 Common Tasks
+### Ecommerce-server dev loop
+1. `cd apps/ecommerce-server`
+2. `npm install`
+3. `npm run prisma:generate`
+4. `npm run docker:dev`
+5. `npm run db:init`
+6. `npm run start`
+
+### Logistic-server consumer stack
+1. `cd apps/logistic-server`
+2. `npm install`
+3. `npm run prisma:generate`
+4. `npm run docker:dev` (brings up MySQL, Adminer, Kafka, kafka-ui, NATS)
+5. `npm run db:init`
+6. `npm run start`
+
+### Ecommerce-admin dashboard
+1. `cd apps/ecommerce-admin`
+2. Configure `.env` with the active backend URL (`REACT_APP_SERVER_URL=http://localhost:3000` by default)
+3. `npm install`
+4. `npm run start` (uses Vite on port `3001`)
+5. For a production preview: `npm run build && npm run serve`
+
+### Database migrations & seeds (either backend)
+```sh
+cd apps/<service>-server
+npm run db:migrate-save -- --name "add-new-model"
+npm run db:migrate-up
+npm run seed
+```
+
+### Tear down Docker resources
+```sh
+cd apps/<service>-server
+npm run compose:down
+# or stop only dev infra
+docker-compose -f docker-compose.dev.yml down --volumes
+```
+
+## 📚 Reference Examples
+| Path | Why it matters |
+| --- | --- |
+| `apps/ecommerce-admin/src/pages/Dashboard.tsx` | Minimal React Admin dashboard pattern with Material UI components. |
+| `apps/ecommerce-admin/src/data-provider/graphqlDataProvider.ts` | Apollo-powered data provider wiring for GraphQL resources. |
+| `apps/ecommerce-server/src/order/` | Typical NestJS module/resolver/service triple for a domain resource. |
+| `apps/ecommerce-server/src/kafka/kafka.producer.service.ts` | Implementation of Kafka producers emitting order/product events. |
+| `apps/logistic-server/src/kafka/kafka.service.ts` | Kafka consumer setup for receive-pattern workflows. |
+| `apps/logistic-server/src/nats/nats.service.ts` | NATS integration showing subscription handling. |
+| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts` | Example Jest spec exercising auth logic. |
+| `apps/logistic-server/src/tests/auth/token.service.spec.ts` | Logistics-side auth test mirroring backend conventions. |
+
+## 🔗 Additional Resources
+- [Root README](README.md) — high-level summary plus Kafka topic definitions.
+- [Amplication documentation](https://docs.amplication.com/guides/getting-started) — covers generated architecture expectations.
+- [ecommerce-server README](apps/ecommerce-server/README.md)
+- [logistic-server README](apps/logistic-server/README.md)
+- [ecommerce-admin README](apps/ecommerce-admin/README.md)
+- [ecommerce-server docker-compose.dev.yml](apps/ecommerce-server/docker-compose.dev.yml)
+- [logistic-server docker-compose.dev.yml](apps/logistic-server/docker-compose.dev.yml)
