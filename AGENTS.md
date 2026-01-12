@@ -3,10 +3,11 @@
 ## 📦 Project Overview
 - Amplication-generated monorepo housing three independent services under `apps/`: two NestJS backends (`ecommerce-server`, `logistic-server`) and a React Admin frontend (`ecommerce-admin`).
 - Shared patterns: Prisma for data access, Kafka for messaging, `.env`-driven configuration, and service-specific `package.json`, `Dockerfile`, and `docker-compose` files. There is **no root-level `package.json`**—each service manages its own dependencies.
+- **Regeneration safety:** Amplication-generated artifacts live under `src/<module>/base/*`; extend or override behavior in sibling files so regenerations never overwrite custom logic.
 - Technology stack highlights:
   - **ecommerce-server:** NestJS + PostgreSQL + JWT + Kafka producer topics for order & product lifecycle.
   - **logistic-server:** NestJS + MySQL + HTTP Basic Auth + Kafka consumers + dedicated NATS integration for logistics workflows.
-  - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `REACT_APP_SERVER_URL`.
+  - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
 
 ## 🗂️ Repository Layout
 - Root contains only `README.md` plus the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
@@ -49,6 +50,10 @@
 | `DB_NAME` | Database name | `[service-name]` | same |
 | `JWT_SECRET_KEY` | JWT signing secret | `[secret]` | same |
 | `JWT_EXPIRATION` | JWT TTL | `2d` | same |
+| `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | same |
+| `KAFKA_CLIENT_ID` | Client ID used by ecommerce-server when connecting to Kafka. | `ecommerce-server` | same |
+| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `[group-id]` | same |
+| `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | same |
 
 ### 🚚 logistic-server (`apps/logistic-server`)
 - **Role:** Warehouse & shipment service secured with HTTP Basic auth, using MySQL storage, Kafka consumers, and NATS-based logistics messaging (`src/nats/`).
@@ -68,16 +73,21 @@
 | `DB_NAME` | Database name | `[service-name]` | same |
 | `JWT_SECRET_KEY` | Token secret (used by guards) | `[secret]` | same |
 | `JWT_EXPIRATION` | Token TTL | `2d` | same |
+| `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | same |
+| `KAFKA_CLIENT_ID` | Client ID used by logistic-server when connecting to Kafka. | `logistic-server` | same |
+| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `[group-id]` | same |
+| `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | same |
+| `NATS_SERVERS` | Comma-separated NATS server URLs consumed by logistic-server. | `nats://localhost:4222` | same |
 
 ### 🖥️ ecommerce-admin (`apps/ecommerce-admin`)
 - **Role:** React Admin dashboard consuming the ecommerce GraphQL API; uses Vite for dev/build and React Admin resources under `src/<resource>/`.
 - **Core stack:** React 18, React Admin 5, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
-- **Local infra:** Expects the ecommerce server running; `REACT_APP_SERVER_URL` must point to that host/port.
+- **Local infra:** Expects the ecommerce server running; `VITE_REACT_APP_SERVER_URL` must point to that host/port.
 
 | Name | Description | Default / Notes | Source |
 | --- | --- | --- | --- |
 | `PORT` | Frontend dev server port | `3001` | `apps/ecommerce-admin/README.md` |
-| `REACT_APP_SERVER_URL` | Base URL for backend API | `http://localhost:[server-port]` | same |
+| `VITE_REACT_APP_SERVER_URL` | Public URL of ecommerce-server consumed by the admin UI. | `http://localhost:[server-port]` | same |
 
 ## 🛠️ Tooling & Scripts
 ### Backend services (`apps/ecommerce-server`, `apps/logistic-server`)
@@ -113,7 +123,7 @@
 3. **Generate Prisma artifacts** via `npm run prisma:generate` (backends only) when schemas change.
 4. **Provision local infra** with `npm run docker:dev` to bring up the service’s database, Kafka stack, and (for logistics) NATS & Adminer.
 5. **Initialize data** using `npm run db:init` to run migrations plus `scripts/seed.ts`.
-6. **Start the service** with `npm run start` (servers) or `npm run start` from `apps/ecommerce-admin` after ensuring `REACT_APP_SERVER_URL` points at the running API.
+6. **Start the service** with `npm run start` (servers) or `npm run start` from `apps/ecommerce-admin` after ensuring `VITE_REACT_APP_SERVER_URL` points at the running API.
 7. **Alternative container path:** `npm run compose:up` builds & runs the service container using the provided `Dockerfile` and compose file.
 
 ## 🔗 Messaging & Integrations
@@ -129,6 +139,7 @@
 
 ## ⚠️ Critical Rules & Security
 - `.env` files in each service contain generated secrets (hash salts, DB passwords, JWT keys); **never commit real credentials**. Follow README guidance to migrate secrets into a secure vault for production deployments.
+- Never modify files under `src/**/base/`; Amplication regenerates them and any customizations will be overwritten. Extend behavior in sibling modules/services/controllers instead.
 - Backends require their databases, Kafka, and (for logistics) NATS to be running before executing `npm run start`, `npm run test`, or any migrations—`docker:dev` is mandatory.
 - Default `admin` / `admin` credentials exist purely for local testing; rotate before exposing any environment publicly.
 - When editing Prisma schemas or seed scripts, regenerate the Prisma client and re-run migrations to avoid drift.
@@ -152,7 +163,7 @@
 
 ### Ecommerce-admin dashboard
 1. `cd apps/ecommerce-admin`
-2. Configure `.env` with the active backend URL (`REACT_APP_SERVER_URL=http://localhost:3000` by default)
+2. Configure `.env` with the active backend URL (`VITE_REACT_APP_SERVER_URL=http://localhost:3000` by default)
 3. `npm install`
 4. `npm run start` (uses Vite on port `3001`)
 5. For a production preview: `npm run build && npm run serve`
@@ -182,6 +193,7 @@ docker-compose -f docker-compose.dev.yml down --volumes
 | `apps/ecommerce-server/src/kafka/kafka.producer.service.ts` | Implementation of Kafka producers emitting order/product events. |
 | `apps/logistic-server/src/kafka/kafka.service.ts` | Kafka consumer setup for receive-pattern workflows. |
 | `apps/logistic-server/src/nats/nats.service.ts` | NATS integration showing subscription handling. |
+| `apps/logistic-server/src/warehouse/` | Generated `base/` DTOs plus adjacent custom controllers/services illustrating the layering pattern. |
 | `apps/ecommerce-server/src/tests/auth/token.service.spec.ts` | Example Jest spec exercising auth logic. |
 | `apps/logistic-server/src/tests/auth/token.service.spec.ts` | Logistics-side auth test mirroring backend conventions. |
 
