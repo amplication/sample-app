@@ -8,6 +8,9 @@
   - **ecommerce-server:** NestJS + PostgreSQL + JWT + Kafka producer topics for order & product lifecycle.
   - **logistic-server:** NestJS + MySQL + HTTP Basic Auth + Kafka consumers + dedicated NATS integration for logistics workflows.
   - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
+- Toolchain versions (from the app-level `package.json` files):
+  - Backends run on NestJS `10.2.x`, Prisma `5.4.x`, TypeScript `5.4.x`, KafkaJS `2.2.x`, npm-run-all `4.1.x`, and (logistics) NATS `2.17.x`.
+  - The admin UI uses React `18.3.x`, React Admin `5.1.x`, Apollo Client `3.6.x`, Vite `4.3.x`, and TypeScript `5.1.x`.
 
 ## 🗂️ Repository Layout
 - Root contains only `README.md` plus the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
