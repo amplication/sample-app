@@ -76,16 +76,17 @@
 | `DB_NAME` | Database name | `[service-name]` | same |
 | `JWT_SECRET_KEY` | Token secret (used by guards) | `[secret]` | same |
 | `JWT_EXPIRATION` | Token TTL | `2d` | same |
-| `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | same |
-| `KAFKA_CLIENT_ID` | Client ID used by logistic-server when connecting to Kafka. | `logistic-server` | same |
-| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `[group-id]` | same |
-| `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | same |
-| `NATS_SERVERS` | Comma-separated NATS server URLs consumed by logistic-server. | `nats://localhost:4222` | same |
+| `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | `apps/logistic-server/.env` |
+| `KAFKA_CLIENT_ID` | Client ID used by logistic-server when connecting to Kafka. | `logistic-server` | `apps/logistic-server/.env` |
+| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `logistic` | `apps/logistic-server/.env` |
+| `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | `apps/logistic-server/.env` |
+| `NATS_SERVERS` | Comma-separated NATS server host:port entries; the NestJS NATS transport prepends `nats://` automatically. | `localhost:4222` | `apps/logistic-server/.env` (mirrors `docker-compose.dev.yml`) |
 
 ### 🖥️ ecommerce-admin (`apps/ecommerce-admin`)
 - **Role:** React Admin dashboard consuming the ecommerce GraphQL API; uses Vite for dev/build and React Admin resources under `src/<resource>/`.
 - **Core stack:** React 18, React Admin 5, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
 - **Local infra:** Expects the ecommerce server running; `VITE_REACT_APP_SERVER_URL` must point to that host/port.
+- **Heads-up:** `apps/ecommerce-admin/README.md` still references Create React App—consult `apps/ecommerce-admin/package.json` and `.env` for the authoritative Vite scripts/envs (including `VITE_REACT_APP_SERVER_URL`).
 
 | Name | Description | Default / Notes | Source |
 | --- | --- | --- | --- |
