@@ -196,10 +196,11 @@ docker-compose -f docker-compose.dev.yml down --volumes
 | `apps/ecommerce-server/src/order/` | Typical NestJS module/resolver/service triple for a domain resource. |
 | `apps/ecommerce-server/src/kafka/kafka.producer.service.ts` | Implementation of Kafka producers emitting order/product events. |
 | `apps/logistic-server/src/kafka/kafka.service.ts` | Kafka consumer setup for receive-pattern workflows. |
-| `apps/logistic-server/src/nats/nats.service.ts` | NATS integration showing subscription handling. |
+| `apps/logistic-server/src/nats/` | Authoritative NATS wiring (module, topics, microservice bootstrap) for complex logistics messaging. |
 | `apps/logistic-server/src/warehouse/` | Generated `base/` DTOs plus adjacent custom controllers/services illustrating the layering pattern. |
 | `apps/ecommerce-server/src/tests/auth/token.service.spec.ts` | Example Jest spec exercising auth logic. |
 | `apps/logistic-server/src/tests/auth/token.service.spec.ts` | Logistics-side auth test mirroring backend conventions. |
+| `apps/logistic-server/docker-compose.dev.yml` | Comprehensive dev infra stack (MySQL, Adminer, Kafka, kafka-ui, NATS) used across backend workflows. |
 
 ## 🔗 Additional Resources
 - [Root README](README.md) — high-level summary plus Kafka topic definitions.
