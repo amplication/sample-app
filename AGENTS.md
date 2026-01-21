@@ -37,7 +37,7 @@
 ## 🧩 Service Profiles
 ### 🧮 ecommerce-server (`apps/ecommerce-server`)
 - **Role:** Order & product management API with JWT auth, PostgreSQL persistence, and Kafka producer integrations (`src/kafka/`).
-- **Core stack:** NestJS, Prisma, PostgreSQL, KafkaJS, Swagger, Jest.
+- **Core stack:** NestJS 10.2.x + Prisma 5.4.x, TypeScript 5.4.x, PostgreSQL, KafkaJS 2.2.x producer, Swagger, Jest.
 - **Local infra:** `docker-compose.dev.yml` launches PostgreSQL plus Kafka+Zookeeper+kafka-ui; `npm run docker:dev` wraps it.
 - **Credentials:** Default `admin` / `admin` account for dev/testing (documented in `apps/ecommerce-server/README.md`).
 
@@ -54,13 +54,13 @@
 | `JWT_SECRET_KEY` | JWT signing secret | `[secret]` | same |
 | `JWT_EXPIRATION` | JWT TTL | `2d` | same |
 | `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | same |
-| `KAFKA_CLIENT_ID` | Client ID used by ecommerce-server when connecting to Kafka. | `ecommerce-server` | same |
-| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `[group-id]` | same |
+| `KAFKA_CLIENT_ID` | Client ID used by ecommerce-server when connecting to Kafka. | `ecommerce` | same |
+| `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `ecommerce` | same |
 | `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | same |
 
 ### 🚚 logistic-server (`apps/logistic-server`)
 - **Role:** Warehouse & shipment service secured with HTTP Basic auth, using MySQL storage, Kafka consumers, and NATS-based logistics messaging (`src/nats/`).
-- **Core stack:** NestJS, Prisma, MySQL, KafkaJS, `nats` client, Swagger, Jest.
+- **Core stack:** NestJS 10.2.x + Prisma 5.4.x, MySQL, KafkaJS 2.2.x consumer, NATS 2.17.x client, Swagger, Jest.
 - **Local infra:** `docker-compose.dev.yml` provisions MySQL, Adminer, Kafka stack, kafka-ui, and an explicit `nats` container.
 - **Credentials:** Shares the generated `admin` / `admin` dev credentials; adjust Basic Auth secrets before production.
 
@@ -77,14 +77,15 @@
 | `JWT_SECRET_KEY` | Token secret (used by guards) | `[secret]` | same |
 | `JWT_EXPIRATION` | Token TTL | `2d` | same |
 | `KAFKA_BROKERS` | Comma-separated Kafka bootstrap broker addresses. | `localhost:9092` | `apps/logistic-server/.env` |
-| `KAFKA_CLIENT_ID` | Client ID used by logistic-server when connecting to Kafka. | `logistic-server` | `apps/logistic-server/.env` |
+| `KAFKA_CLIENT_ID` | Client ID used by logistic-server when connecting to Kafka. | `logistic` | `apps/logistic-server/.env` |
 | `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `logistic` | `apps/logistic-server/.env` |
 | `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | `apps/logistic-server/.env` |
-| `NATS_SERVERS` | Comma-separated NATS server host:port entries; the NestJS NATS transport prepends `nats://` automatically. | `localhost:4222` | `apps/logistic-server/.env` (mirrors `docker-compose.dev.yml`) |
+| `NATS_SERVERS` | Comma-separated NATS server endpoints. Default `.env` value is `localhost:4222`, but the NATS factory consumes the string as-is—provide fully qualified entries like `nats://host:4222` when not using the compose default. | `localhost:4222` | `apps/logistic-server/.env` (mirrors `docker-compose.dev.yml`) |
 
 ### 🖥️ ecommerce-admin (`apps/ecommerce-admin`)
 - **Role:** React Admin dashboard consuming the ecommerce GraphQL API; uses Vite for dev/build and React Admin resources under `src/<resource>/`.
-- **Core stack:** React 18, React Admin 5, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
+- **Core stack:** React, React Admin, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
+- **Core stack versions:** React 18.3.x / React Admin 5.1.x / Vite 4.3.x / TypeScript 5.1.x.
 - **Local infra:** Expects the ecommerce server running; `VITE_REACT_APP_SERVER_URL` must point to that host/port.
 - **Heads-up:** `apps/ecommerce-admin/README.md` still references Create React App—consult `apps/ecommerce-admin/package.json` and `.env` for the authoritative Vite scripts/envs (including `VITE_REACT_APP_SERVER_URL`).
 
@@ -104,7 +105,7 @@
 | `npm run db:migrate-save` | Create a new Prisma migration (dev). | same |
 | `npm run db:migrate-up` | Apply migrations (deploy). | same |
 | `npm run db:clean` | Reset database via Prisma. | same |
-| `npm run db:init` | Runs `db:migrate-save`, `db:migrate-up`, then `seed`. | same |
+| `npm run db:init` | First-time bootstrap helper chaining `db:migrate-save -- --name "initial version"`, `db:migrate-up`, then `seed`; for later changes run `db:migrate-save -- --name <migration>` followed by `db:migrate-up`. | same |
 | `npm run seed` | Execute `scripts/seed.ts` (can be customized via `scripts/customSeed.ts`). | same |
 | `npm run docker:dev` | Start service-specific infra from `docker-compose.dev.yml`. | same |
 | `npm run compose:up` / `compose:down` | Run/tear down Dockerized app stack. | same |
@@ -126,14 +127,14 @@
 2. **Install dependencies** with `npm install` inside that service.
 3. **Generate Prisma artifacts** via `npm run prisma:generate` (backends only) when schemas change.
 4. **Provision local infra** with `npm run docker:dev` to bring up the service’s database, Kafka stack, and (for logistics) NATS & Adminer.
-5. **Initialize data** using `npm run db:init` to run migrations plus `scripts/seed.ts`.
+5. **Initialize data** using `npm run db:init` only for first-time bootstrap (runs `db:migrate-save -- --name "initial version"`, `db:migrate-up`, then `seed`); afterwards create migrations with `npm run db:migrate-save -- --name <migration>` and apply via `npm run db:migrate-up`/`npm run seed`.
 6. **Start the service** with `npm run start` (servers) or `npm run start` from `apps/ecommerce-admin` after ensuring `VITE_REACT_APP_SERVER_URL` points at the running API.
 7. **Alternative container path:** `npm run compose:up` builds & runs the service container using the provided `Dockerfile` and compose file.
 
 ## 🔗 Messaging & Integrations
 - **Kafka topics (from `README.md`):** `order.create.v1`, `order.update.v1`, `product.create.v1`, `product.update.v1`.
-  - `apps/ecommerce-server` sends messages on those topics (see `src/kafka/kafka.producer.service.ts`).
-  - `apps/logistic-server` consumes the same topics (`src/kafka/kafka.service.ts`).
+  - `apps/ecommerce-server` is the Kafka producer emitting those topics (see `src/kafka/kafka.producer.service.ts`).
+  - `apps/logistic-server` is the Kafka consumer for those topics and relays workflows through its NATS bridge (`src/kafka/kafka.service.ts`, `src/nats/`).
 - **NATS (logistics):** `apps/logistic-server/docker-compose.dev.yml` defines a `nats` container, and the service implements handlers in `src/nats/` (`nats.module.ts`, `nats.service.ts`, `topics.ts`). Kafka and NATS clients are wired in `src/connectMicroservices.ts`.
 
 ## ✅ Testing & Quality
