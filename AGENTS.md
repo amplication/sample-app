@@ -200,11 +200,12 @@ docker-compose -f docker-compose.dev.yml down --volumes
 | Path | Why it matters |
 | --- | --- |
 | `apps/ecommerce-admin/src/pages/Dashboard.tsx` | Minimal React Admin dashboard wiring that shows the default layout/components pattern. |
-| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts` | Jest spec demonstrating how backend auth services are exercised with ts-jest. |
+| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts`<br>`apps/logistic-server/src/prisma/prisma.util.spec.ts` | Companion Jest specs that show both service-layer auth testing (ts-jest helpers, spies, and JWT mocks) and the logistics Prisma utility coverage for DB helper logic. |
 | `apps/ecommerce-server/src/order/` | Canonical example of an Amplication-generated NestJS module (controller/service/resolver + `base/`). |
 | `apps/ecommerce-admin/src/data-provider/graphqlDataProvider.ts` | Apollo Client-backed data provider bridging React Admin resources to the ecommerce GraphQL API. |
 | `apps/logistic-server/src/nats/` | Full NATS bridge (module/service/topics) that relays Kafka-consumed events to downstream systems. |
-| `apps/logistic-server/docker-compose.dev.yml` | Source of record for the backend dev stack (MySQL, Adminer, Kafka trio, kafka-ui, NATS). |
+| `apps/logistic-server/docker-compose.dev.yml` | Source of record for the logistics dev stack (MySQL, Adminer, Kafka trio, kafka-ui, dedicated NATS container). |
+| `apps/ecommerce-server/docker-compose.dev.yml` | Parallel compose manifest that provisions the ecommerce server's PostgreSQL + Kafka toolchain for local development. |
 | `apps/ecommerce-server/scripts/customSeed.ts` | Template for extending the default Prisma seeding pipeline with custom data fixtures. |
 
 ## 🔗 Additional Resources
