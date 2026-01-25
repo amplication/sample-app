@@ -6,7 +6,7 @@
 - **Regeneration safety:** Amplication-generated artifacts live under `src/<module>/base/*`; extend or override behavior in sibling files so regenerations never overwrite custom logic.
 - Technology stack highlights:
   - **ecommerce-server:** NestJS + PostgreSQL + JWT + Kafka producer topics for order & product lifecycle.
-  - **logistic-server:** NestJS + MySQL + HTTP Basic Auth + Kafka consumers + dedicated NATS integration for logistics workflows.
+  - **logistic-server:** NestJS + MySQL with JWT- plus HTTP Basic-protected APIs, Kafka consumers, and a dedicated NATS integration for logistics workflows.
   - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
 - Current stack alignment: NestJS 10, Prisma 5, PostgreSQL, MySQL, KafkaJS, NATS, React 18, React Admin 5, Vite 4, Apollo Client, Sass, Jest/ts-jest, ESLint, Prettier, Docker Compose.
 - Toolchain versions (from the app-level `package.json` files):
@@ -14,7 +14,7 @@
   - The admin UI uses React `18.3.x`, React Admin `5.1.x`, Apollo Client `3.6.x`, Vite `4.3.x`, and TypeScript `5.1.x`.
 
 ## 🗂️ Repository Layout
-- Root contains only `README.md` plus the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
+- Root stays minimal with `README.md`, `AGENTS.md`, and the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
 - Each backend service exposes a consistent structure: `Dockerfile`, `docker-compose*.yml`, `.env`, `package.json`, `prisma/schema.prisma`, `scripts/seed.ts`, and `src/` modules (auth, domain resources like `order/`, messaging folders like `kafka/` or `nats/`, and `tests/`).
 - The admin app includes Vite config (`vite.config.ts`), `src/` resources (e.g., `order/`, `product/`, `pages/Dashboard.tsx`), and utility folders (`auth-provider/`, `data-provider/`, `theme/`).
 
@@ -145,7 +145,7 @@
 - **NATS (logistics):** `apps/logistic-server/docker-compose.dev.yml` defines a `nats` container, and the service publishes/handles topics from `src/nats/topics.ts` via `nats.module.ts` / `nats.service.ts` to propagate the Kafka-derived events. Kafka and NATS clients are wired together in `src/connectMicroservices.ts`.
 
 ## ✅ Testing & Quality
-- **Backends:** Run `npm run test` inside each server to execute Jest suites configured via `ts-jest` (`package.json > jest`). Domain-focused specs live under `apps/ecommerce-server/src/tests/` and `apps/logistic-server/src/tests/` (e.g., `auth/token.service.spec.ts`, `health/health.service.spec.ts`). Always keep the `npm run docker:dev` stack running first so the PostgreSQL/MySQL/Kafka/NATS dependencies are available to the tests.
+- **Backends:** Run `npm run test` inside each server to execute Jest suites configured via `ts-jest` (`package.json > jest`). Domain-focused specs live under `apps/ecommerce-server/src/tests/` and `apps/logistic-server/src/tests/` (e.g., `auth/token.service.spec.ts`, `auth/basic/basic.strategy.spec.ts`, `prisma.util.spec.ts`). Always keep the `npm run docker:dev` stack running first so the PostgreSQL/MySQL/Kafka/NATS dependencies are available to the tests.
 - **Frontend:** While no standalone `test` script is declared, quality gates rely on `npm run type-check`, `npm run lint`, `npm run format`, and `npm run build`. The Vite/React Testing Library setup is scaffolded in `src/setupTests.ts` should you add tests.
 - **Data prep:** Use `npm run seed` (servers) for deterministic fixtures before running suites; ensure Dockerized databases and brokers are already healthy.
 
@@ -200,7 +200,7 @@ docker-compose -f docker-compose.dev.yml down --volumes
 | Path | Why it matters |
 | --- | --- |
 | `apps/ecommerce-admin/src/pages/Dashboard.tsx` | Minimal React Admin dashboard wiring that shows the default layout/components pattern. |
-| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts`<br>`apps/logistic-server/src/prisma/prisma.util.spec.ts` | Companion Jest specs that show both service-layer auth testing (ts-jest helpers, spies, and JWT mocks) and the logistics Prisma utility coverage for DB helper logic. |
+| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts`<br>`apps/logistic-server/src/prisma.util.spec.ts` | Companion Jest specs that show both service-layer auth testing (ts-jest helpers, spies, and JWT mocks) and the logistics Prisma utility coverage for DB helper logic. |
 | `apps/ecommerce-server/src/order/` | Canonical example of an Amplication-generated NestJS module (controller/service/resolver + `base/`). |
 | `apps/ecommerce-admin/src/data-provider/graphqlDataProvider.ts` | Apollo Client-backed data provider bridging React Admin resources to the ecommerce GraphQL API. |
 | `apps/logistic-server/src/nats/` | Full NATS bridge (module/service/topics) that relays Kafka-consumed events to downstream systems. |
