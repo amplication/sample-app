@@ -41,6 +41,7 @@
 - **Core stack:** NestJS 10.2.x + Prisma 5.4.x, TypeScript 5.4.x, PostgreSQL, KafkaJS 2.2.x producer, Swagger, Jest.
 - **Local infra:** `docker-compose.dev.yml` launches PostgreSQL plus Kafka+Zookeeper+kafka-ui; `npm run docker:dev` wraps it.
 - **Credentials:** Default `admin` / `admin` account for dev/testing (documented in `apps/ecommerce-server/README.md`).
+- **Secrets management:** `src/providers/secrets/` ships `SecretsManagerModule`/`SecretsManagerService`, letting `auth/jwt/jwtSecretFactory.ts` pull `JWT_SECRET_KEY` via `ConfigService` (see `apps/ecommerce-server/src/providers/secrets/secretsManager.module.ts`).
 
 | Name | Description | Default / Notes | Source |
 | --- | --- | --- | --- |
@@ -58,6 +59,8 @@
 | `KAFKA_CLIENT_ID` | Client ID used by ecommerce-server when connecting to Kafka. | `ecommerce` | same |
 | `KAFKA_GROUP_ID` | Kafka consumer group ID for this service. | `ecommerce` | same |
 | `KAFKA_ENABLE_SSL` | Toggle (`true`/`false`) controlling SSL usage for Kafka connections. | `false` | same |
+| `GRAPHQL_PLAYGROUND` | Enables the GraphQL Playground UI when truthy. | `false` (set `true` locally) | `apps/ecommerce-server/src/app.module.ts` |
+| `GRAPHQL_INTROSPECTION` | Lets schema introspection stay on even when Playground is off. | `false` | `apps/ecommerce-server/src/app.module.ts` |
 
 - **Prisma workflow:** After editing `prisma/schema.prisma`, always run `npm run prisma:generate` ➜ `npm run db:migrate-save -- --name <change>` ➜ `npm run db:migrate-up` ➜ `npm run seed` to keep the client, migrations, and fixtures in sync.
 
@@ -66,6 +69,7 @@
 - **Core stack:** NestJS 10.2.x + Prisma 5.4.x, MySQL, KafkaJS 2.2.x consumer, NATS 2.17.x client, Swagger, Jest.
 - **Local infra:** `docker-compose.dev.yml` provisions MySQL, Adminer, Kafka stack, kafka-ui, and an explicit `nats` container.
 - **Credentials:** Shares the generated `admin` / `admin` dev credentials; adjust Basic Auth secrets before production.
+- **Secrets management:** `src/providers/secrets/` mirrors the ecommerce service so `auth/jwt/jwtSecretFactory.ts` resolves the JWT secret from `SecretsManagerService` (`apps/logistic-server/src/providers/secrets/secretsManager.module.ts`).
 
 | Name | Description | Default / Notes | Source |
 | --- | --- | --- | --- |
