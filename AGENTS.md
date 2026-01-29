@@ -1,14 +1,13 @@
 # AGENTS Guide for `amplication/sample-app`
 
 ## 📦 Project Overview
-- Amplication-generated monorepo housing three independent services under `apps/`: two NestJS backends (`ecommerce-server`, `logistic-server`) and a React Admin frontend (`ecommerce-admin`).
-- Shared patterns: Prisma for data access, Kafka for messaging, `.env`-driven configuration, and service-specific `package.json`, `Dockerfile`, and `docker-compose` files. There is **no root-level `package.json`**—each service manages its own dependencies.
+- **Repository type:** Amplication-generated mixed monorepo rooted at `apps/` with three independent services: `apps/ecommerce-server/`, `apps/logistic-server/`, and `apps/ecommerce-admin/`. Each service keeps its own `package.json`, `Dockerfile`, `docker-compose*.yml`, `.env`, and nested `prisma/`, `scripts/`, and `src/` directories.
+- **Shared patterns:** Per-service isolation with Amplication-generated NestJS backends that share Prisma + Kafka scaffolding, and a React Admin frontend whose `src/` mirrors resource-based folders. Every service relies on env-driven configuration and its own `docker-compose.dev.yml` to provision databases, Kafka, and (for logistics) NATS locally.
 - **Regeneration safety:** Amplication-generated artifacts live under `src/<module>/base/*`; extend or override behavior in sibling files so regenerations never overwrite custom logic.
-- Technology stack highlights:
-  - **ecommerce-server:** NestJS + PostgreSQL + JWT + Kafka producer topics for order & product lifecycle.
-  - **logistic-server:** NestJS + MySQL with JWT- plus HTTP Basic-protected APIs, Kafka consumers, and a dedicated NATS integration for logistics workflows.
-  - **ecommerce-admin:** React Admin on Vite, consuming the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
-- Current stack alignment: NestJS 10, Prisma 5, PostgreSQL, MySQL, KafkaJS, NATS, React 18, React Admin 5, Vite 4, Apollo Client, Sass, Jest/ts-jest, ESLint, Prettier, Docker Compose.
+- **Technologies in use:** NestJS 10, Prisma 5, TypeScript 5, PostgreSQL, MySQL, KafkaJS, NATS, React 18, React Admin 5, Vite 4, Apollo Client, Sass, Jest/ts-jest, ESLint, Prettier, Docker Compose.
+  - **ecommerce-server:** NestJS backend publishing Kafka topics for order/product lifecycle using PostgreSQL storage.
+  - **logistic-server:** NestJS backend consuming the same Kafka topics, persisting to MySQL, and bridging to NATS for downstream logistics workflows.
+  - **ecommerce-admin:** React Admin UI built with Vite that targets the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
 - Toolchain versions (from the app-level `package.json` files):
   - Backends run on NestJS `10.2.x`, Prisma `5.4.x`, TypeScript `5.4.x`, KafkaJS `2.2.x`, npm-run-all `4.1.x`, and (logistics) NATS `2.17.x`.
   - The admin UI uses React `18.3.x`, React Admin `5.1.x`, Apollo Client `3.6.x`, Vite `4.3.x`, and TypeScript `5.1.x`.
@@ -21,18 +20,19 @@
 ```
 .
 ├── README.md
+├── AGENTS.md
 └── apps/
     ├── ecommerce-server/
     │   ├── README.md, package.json, Dockerfile, docker-compose*.yml
-    │   ├── prisma/schema.prisma & scripts/seed.ts
+    │   ├── prisma/schema.prisma & scripts/{seed.ts, customSeed.ts}
     │   └── src/(order/, product/, auth/, kafka/, tests/, ...)
     ├── logistic-server/
     │   ├── README.md, package.json, Dockerfile, docker-compose*.yml
     │   ├── prisma/schema.prisma & scripts/seed.ts
     │   └── src/(shipment/, warehouse/, auth/, kafka/, nats/, tests/, ...)
     └── ecommerce-admin/
-        ├── README.md, package.json, Dockerfile
-        └── src/(address/, order/, pages/Dashboard.tsx, api/, auth-provider/, ...)
+        ├── README.md, package.json, Dockerfile, vite.config.ts
+        └── src/(address/, order/, pages/Dashboard.tsx, data-provider/, auth-provider/, ...)
 ```
 
 ## 🧩 Service Profiles
@@ -203,14 +203,11 @@ docker-compose -f docker-compose.dev.yml down --volumes
 ## 📚 Reference Examples
 | Path | Why it matters |
 | --- | --- |
-| `apps/ecommerce-admin/src/pages/Dashboard.tsx` | Minimal React Admin dashboard wiring that shows the default layout/components pattern. |
-| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts`<br>`apps/logistic-server/src/prisma.util.spec.ts` | Companion Jest specs that show both service-layer auth testing (ts-jest helpers, spies, and JWT mocks) and the logistics Prisma utility coverage for DB helper logic. |
-| `apps/ecommerce-server/src/order/` | Canonical example of an Amplication-generated NestJS module (controller/service/resolver + `base/`). |
-| `apps/ecommerce-admin/src/data-provider/graphqlDataProvider.ts` | Apollo Client-backed data provider bridging React Admin resources to the ecommerce GraphQL API. |
-| `apps/logistic-server/src/nats/` | Full NATS bridge (module/service/topics) that relays Kafka-consumed events to downstream systems. |
-| `apps/logistic-server/docker-compose.dev.yml` | Source of record for the logistics dev stack (MySQL, Adminer, Kafka trio, kafka-ui, dedicated NATS container). |
-| `apps/ecommerce-server/docker-compose.dev.yml` | Parallel compose manifest that provisions the ecommerce server's PostgreSQL + Kafka toolchain for local development. |
-| `apps/ecommerce-server/scripts/customSeed.ts` | Template for extending the default Prisma seeding pipeline with custom data fixtures. |
+| `apps/ecommerce-admin/src/pages/Dashboard.tsx` | Simple React Admin dashboard page that demonstrates the baseline UI/layout conventions. |
+| `apps/logistic-server/src/nats/` | Complex integration surface showing how the logistics service wires NATS modules, services, and topics. |
+| `apps/ecommerce-server/src/order/` | Representative NestJS resource generated by Amplication, including controllers, services, resolvers, and `base/` files. |
+| `apps/ecommerce-server/src/tests/auth/token.service.spec.ts` | Canonical Jest spec illustrating how to test generated auth services with ts-jest and mocks. |
+| `apps/logistic-server/docker-compose.dev.yml` | Infrastructure blueprint for local logistics development (MySQL, Adminer, Kafka stack, kafka-ui, dedicated NATS container). |
 
 ## 🔗 Additional Resources
 - [Root README](README.md) — high-level summary plus Kafka topic definitions.
