@@ -1,12 +1,12 @@
 # AGENTS Guide for `amplication/sample-app`
 
 ## 📦 Project Overview
-- **Repository type:** Amplication-generated mixed monorepo rooted at `apps/` with three independent services: `apps/ecommerce-server/`, `apps/logistic-server/`, and `apps/ecommerce-admin/`. Each service keeps its own `package.json`, `Dockerfile`, `docker-compose*.yml`, `.env`, and nested `prisma/`, `scripts/`, and `src/` directories.
-- **Shared patterns:** Per-service isolation with Amplication-generated NestJS backends that share Prisma + Kafka scaffolding, and a React Admin frontend whose `src/` mirrors resource-based folders. Every service relies on env-driven configuration and its own `docker-compose.dev.yml` to provision databases, Kafka, and (for logistics) NATS locally.
+- **Repository type:** Amplication-generated mixed monorepo rooted at `apps/` with three independent services: `apps/ecommerce-server/`, `apps/logistic-server/`, and `apps/ecommerce-admin/`. Backend services (`ecommerce-server`, `logistic-server`) keep `package.json`, `Dockerfile`, `docker-compose*.yml`, `.env`, plus `prisma/`, `scripts/`, and `src/` directories; the admin app includes `package.json`, `Dockerfile`, `.env`, and `src/` but no Prisma/scripts/compose files.
+- **Shared patterns:** Per-service isolation with Amplication-generated NestJS backends that share Prisma + Kafka scaffolding, and a React Admin frontend whose `src/` mirrors resource-based folders. Backend services rely on env-driven configuration and `docker-compose.dev.yml` to provision databases, Kafka, and (for logistics) NATS locally; the admin UI does not use compose.
 - **Regeneration safety:** Amplication-generated artifacts live under `src/<module>/base/*`; extend or override behavior in sibling files so regenerations never overwrite custom logic.
 - **Technologies in use:** NestJS 10, Prisma 5, TypeScript 5, PostgreSQL, MySQL, KafkaJS, NATS, React 18, React Admin 5, Vite 4, Apollo Client, Sass, Jest/ts-jest, ESLint, Prettier, Docker Compose.
   - **ecommerce-server:** NestJS backend publishing Kafka topics for order/product lifecycle using PostgreSQL storage.
-  - **logistic-server:** NestJS backend consuming the same Kafka topics, persisting to MySQL, and bridging to NATS for downstream logistics workflows.
+  - **logistic-server:** NestJS backend consuming the same Kafka topics, persisting to MySQL, with a NATS client module scaffold.
   - **ecommerce-admin:** React Admin UI built with Vite that targets the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
 - Toolchain versions (from the app-level `package.json` files):
   - Backends run on NestJS `10.2.x`, Prisma `5.4.x`, TypeScript `5.4.x`, KafkaJS `2.2.x`, npm-run-all `4.1.x`, and (logistics) NATS `2.17.x`.
@@ -65,7 +65,7 @@
 - **Prisma workflow:** After editing `prisma/schema.prisma`, always run `npm run prisma:generate` ➜ `npm run db:migrate-save -- --name <change>` ➜ `npm run db:migrate-up` ➜ `npm run seed` to keep the client, migrations, and fixtures in sync.
 
 ### 🚚 logistic-server (`apps/logistic-server`)
-- **Role:** Warehouse & shipment service secured with HTTP Basic auth, using MySQL storage, Kafka consumers, and NATS-based logistics messaging (`src/nats/`).
+- **Role:** Warehouse & shipment service secured with HTTP Basic auth, using MySQL storage, Kafka consumers, plus a NATS client module scaffold in `src/nats/`.
 - **Core stack:** NestJS 10.2.x + Prisma 5.4.x, MySQL, KafkaJS 2.2.x consumer, NATS 2.17.x client, Swagger, Jest.
 - **Local infra:** `docker-compose.dev.yml` provisions MySQL, Adminer, Kafka stack, kafka-ui, and an explicit `nats` container.
 - **Credentials:** Shares the generated `admin` / `admin` dev credentials; adjust Basic Auth secrets before production.
@@ -145,8 +145,8 @@
 ## 🔗 Messaging & Integrations
 - **Kafka topics (from `README.md`):** `order.create.v1`, `order.update.v1`, `product.create.v1`, `product.update.v1`.
   - `apps/ecommerce-server` **produces** these events via `src/kafka/kafka.producer.service.ts`.
-  - `apps/logistic-server` **consumes** the same topics with `src/kafka/kafka.service.ts` and forwards logistics updates downstream through its NATS bridge (`src/nats/`).
-- **NATS (logistics):** `apps/logistic-server/docker-compose.dev.yml` defines a `nats` container, and the service publishes/handles topics from `src/nats/topics.ts` via `nats.module.ts` / `nats.service.ts` to propagate the Kafka-derived events. Kafka and NATS clients are wired together in `src/connectMicroservices.ts`.
+  - `apps/logistic-server` **consumes** the same topics via `src/kafka/kafka.controller.ts` (`@EventPattern`).
+- **NATS (logistics):** `apps/logistic-server/docker-compose.dev.yml` defines a `nats` container, and the service configures a client in `src/nats/nats.module.factory.ts` / `nats.service.ts` using `NATS_SERVERS`. The current NATS module is a scaffold and does not forward Kafka events.
 
 ## ✅ Testing & Quality
 - **Backends:** Run `npm run test` inside each server to execute Jest suites configured via `ts-jest` (`package.json > jest`). Domain-focused specs live under `apps/ecommerce-server/src/tests/` and `apps/logistic-server/src/tests/` (e.g., `auth/token.service.spec.ts`, `auth/basic/basic.strategy.spec.ts`, `prisma.util.spec.ts`). Always keep the `npm run docker:dev` stack running first so the PostgreSQL/MySQL/Kafka/NATS dependencies are available to the tests.
