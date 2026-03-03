@@ -7,14 +7,14 @@
 - **Technologies in use:** NestJS 10, Prisma 5, TypeScript 5, PostgreSQL, MySQL, KafkaJS, NATS, React 18, React Admin 5, Vite 4, Apollo Client, Sass, Jest/ts-jest, ESLint, Prettier, Docker Compose.
   - **ecommerce-server:** NestJS backend publishing Kafka topics for order/product lifecycle using PostgreSQL storage.
   - **logistic-server:** NestJS backend consuming the same Kafka topics, persisting to MySQL, with a NATS client module scaffold.
-  - **ecommerce-admin:** React Admin UI built with Vite that targets the ecommerce API via `VITE_REACT_APP_SERVER_URL`.
+  - **ecommerce-admin:** React Admin UI built with Vite that targets the ecommerce API via `REACT_APP_SERVER_URL` / `VITE_REACT_APP_SERVER_URL`.
 - Toolchain versions (from the app-level `package.json` files):
   - Backends run on NestJS `10.2.x`, Prisma `5.4.x`, TypeScript `5.4.x`, KafkaJS `2.2.x`, npm-run-all `4.1.x`, and (logistics) NATS `2.17.x`.
   - The admin UI uses React `18.3.x`, React Admin `5.1.x`, Apollo Client `3.6.x`, Vite `4.3.x`, and TypeScript `5.1.x`.
 
 ## 🗂️ Repository Layout
 - Root stays minimal with `README.md`, `AGENTS.md`, and the `apps/` directory; all tooling, Prisma schemas, and scripts live within each service folder.
-- Each backend service exposes a consistent structure: `Dockerfile`, `docker-compose*.yml`, `.env`, `package.json`, `prisma/schema.prisma`, `scripts/seed.ts`, and `src/` modules (auth, domain resources like `order/`, messaging folders like `kafka/` or `nats/`, and `tests/`).
+- Each backend service exposes a consistent structure: `Dockerfile`, `docker-compose*.yml`, `.env`, `package.json`, `prisma/schema.prisma`, `scripts/{seed.ts, customSeed.ts}`, and `src/` modules (auth, domain resources like `order/`, messaging folders like `kafka/` or `nats/`, and `tests/`).
 - The admin app includes Vite config (`vite.config.ts`), `src/` resources (e.g., `order/`, `product/`, `pages/Dashboard.tsx`), and utility folders (`auth-provider/`, `data-provider/`, `theme/`).
 
 ```
@@ -28,7 +28,7 @@
     │   └── src/(order/, product/, auth/, kafka/, tests/, ...)
     ├── logistic-server/
     │   ├── README.md, package.json, Dockerfile, docker-compose*.yml
-    │   ├── prisma/schema.prisma & scripts/seed.ts
+    │   ├── prisma/schema.prisma & scripts/{seed.ts, customSeed.ts}
     │   └── src/(shipment/, warehouse/, auth/, kafka/, nats/, tests/, ...)
     └── ecommerce-admin/
         ├── README.md, package.json, Dockerfile, vite.config.ts
@@ -96,12 +96,13 @@
 - **Core stack:** React, React Admin, Apollo Client, Vite, TypeScript, ESLint, Prettier, Sass.
 - **Core stack versions:** React 18.3.x / React Admin 5.1.x / Vite 4.3.x / TypeScript 5.1.x.
 - **Local infra:** Expects the ecommerce server running; `VITE_REACT_APP_SERVER_URL` must point to that host/port.
-- **Env naming:** All frontend env vars follow the Vite convention (`VITE_...`), so rely on `apps/ecommerce-admin/package.json` / `.env` as the source of truth and ignore legacy Create React App wording.
+- **Env naming:** The admin UI reads `REACT_APP_SERVER_URL` via `process.env` and `VITE_REACT_APP_SERVER_URL` via `import.meta.env`; keep both aligned using `apps/ecommerce-admin/package.json` / `.env` as the source of truth.
 
 | Name | Description | Default / Notes | Source |
 | --- | --- | --- | --- |
 | `PORT` | Frontend dev server port | `3001` | `apps/ecommerce-admin/README.md` |
-| `VITE_REACT_APP_SERVER_URL` | Public URL of ecommerce-server consumed by the admin UI. | `http://localhost:[server-port]` | same |
+| `REACT_APP_SERVER_URL` | Public URL of ecommerce-server consumed by the admin UI (legacy `process.env` access). | `http://localhost:[server-port]` | same |
+| `VITE_REACT_APP_SERVER_URL` | Public URL of ecommerce-server consumed by the admin UI (`import.meta.env` access). | `http://localhost:[server-port]` | same |
 
 ## 🛠️ Tooling & Scripts
 ### Backend services (`apps/ecommerce-server`, `apps/logistic-server`)
